@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📊 경영 현황 종합 대시보드</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/chart.umd.min.js"></script>
+<script src="assets/data.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="page-head">
+    <h1>📊 경영 현황 종합 대시보드</h1>
+    <div class="meta">2026년 5월 경영 현황 보고 · 작성: 경영지원부 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
+  </div>
+
+  <h2 class="sec">📌 경영 요약</h2>
+  <div class="kpis" id="kpis"></div>
+  <blockquote style="margin-top:14px">💬 매출·영업이익 모두 분기 최고치 달성, 현금흐름 안정적. 이번 달 의사결정 필요 안건 3건.</blockquote>
+
+  <h2 class="sec">🔴 의사결정 요청</h2>
+  <div class="decisions" id="decisions"></div>
+
+  <h2 class="sec">📂 상세 데이터</h2>
+  <div class="links">
+    <a class="link-card" href="finance.html">
+      <div class="t">💰 월간 재무 요약 대시보드</div>
+      <div class="d">매출·비용 추이, 고정비/변동비, 현금흐름 예측</div>
+      <span class="arrow">자세히 보기 →</span>
+    </a>
+    <a class="link-card" href="people.html">
+      <div class="t">👥 인력·조직 대시보드</div>
+      <div class="d">부서별 인원, 인건비 추이, 퇴사율, 채용 파이프라인</div>
+      <span class="arrow">자세히 보기 →</span>
+    </a>
+    <a class="link-card" href="recruiting.html">
+      <div class="t">🎯 2026 채용 대시보드</div>
+      <div class="d">후보자 파이프라인·포지션 관리</div>
+      <span class="arrow">자세히 보기 →</span>
+    </a>
+  </div>
+
+  <h2 class="sec">📈 핵심 지표 추이</h2>
+  <div class="card">
+    <h3>매출 · 비용 · 영업이익</h3>
+    <div class="sub">2026년 1월 ~ 5월 · 백만 원</div>
+    <div class="chart-box"><canvas id="chart-core"></canvas></div>
+  </div>
+
+  <h2 class="sec">💰 월별 재무 현황</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>월</th><th class="num">매출</th><th class="num">비용</th><th class="num">영업이익</th><th class="num">영업이익률</th><th class="num">현금 잔고</th><th>비고</th></tr></thead>
+      <tbody id="tbl-finance"></tbody>
+    </table>
+  </div>
+
+  <h2 class="sec">📁 주요 프로젝트·계약</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>항목</th><th>구분</th><th>담당 부서</th><th>상태</th><th>진행률</th><th>마감일</th><th>리스크/비고</th></tr></thead>
+      <tbody id="tbl-projects"></tbody>
+    </table>
+  </div>
+
+  <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+renderNav("index.html");
+const F = DATA.finance, P = DATA.people;
+const last = F.revenue.length - 1, prev = last - 1;
+
+/* KPI 타일 */
+function delta(cur, pre, unit, pctBase) {
+  const d = cur - pre;
+  const sign = d >= 0 ? "▲" : "▼";
+  const cls = d >= 0 ? "up" : "down";
+  const pct = pctBase ? ` (${d >= 0 ? "+" : ""}${(d / pre * 100).toFixed(1)}%)` : "";
+  return `<div class="delta ${cls}">${sign} ${Math.abs(d).toLocaleString()}${unit}${pct} <span class="vs">전월 대비</span></div>`;
+}
+document.getElementById("kpis").innerHTML = `
+  <div class="kpi"><div class="label">매출</div><div class="value">${F.revenue[last]} <small>백만 원</small></div>${delta(F.revenue[last], F.revenue[prev], "", true)}</div>
+  <div class="kpi"><div class="label">영업이익</div><div class="value">${F.profit[last]} <small>백만 원 · 이익률 ${F.marginPct[last]}%</small></div>${delta(F.profit[last], F.profit[prev], "")}</div>
+  <div class="kpi"><div class="label">현금 잔고</div><div class="value">${F.cash[last].toLocaleString()} <small>백만 원</small></div>${delta(F.cash[last], F.cash[prev], "")}</div>
+  <div class="kpi"><div class="label">총원</div><div class="value">${P.headcount[last]} <small>명</small></div>${delta(P.headcount[last], P.headcount[prev], "명")}</div>`;
+
+/* 의사결정 */
+document.getElementById("decisions").innerHTML = DATA.decisions.map((d, i) => `
+  <div class="decision">
+    <span class="no">${i + 1}</span>
+    <span class="title">${d.title}</span>
+    <span class="desc">${d.desc}</span>
+    ${d.due ? `<span class="due">⏰ 기한 ${d.due}</span>` : ""}
+  </div>`).join("");
+
+/* 핵심 지표 차트 */
+makeLineChart("chart-core", DATA.monthLabels, [
+  lineDS("매출", F.revenue, THEME.rev),
+  lineDS("비용", F.cost, THEME.cost),
+  lineDS("영업이익", F.profit, THEME.profit)
+], { endLabels: true, zero: true });
+
+/* 재무 테이블 */
+document.getElementById("tbl-finance").innerHTML = DATA.months.map((m, i) => `
+  <tr><td>${m}</td><td class="num">${F.revenue[i]}</td><td class="num">${F.cost[i]}</td>
+  <td class="num">${F.profit[i]}</td><td class="num">${F.marginPct[i]}%</td>
+  <td class="num">${F.cash[i].toLocaleString()}</td><td class="muted">${F.notes[i] || "—"}</td></tr>`).join("");
+
+/* 프로젝트 테이블 */
+const stPill = s => s.startsWith("3") ? "green" : s.startsWith("2") ? "blue" : s.startsWith("1") ? "yellow" : "gray";
+document.getElementById("tbl-projects").innerHTML = DATA.projects.map(p => `
+  <tr><td><strong>${p.name}</strong></td><td>${p.type}</td><td>${p.dept}</td>
+  <td><span class="pill ${stPill(p.status)}">${p.status.slice(3)}</span></td>
+  <td><div class="prog"><div class="bar"><i style="width:${p.progress}%"></i></div><span>${p.progress}%</span></div></td>
+  <td>${p.due}</td><td class="muted">${p.note}</td></tr>`).join("");
+</script>
+</body>
+</html>

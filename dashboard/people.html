@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>👥 인력·조직 대시보드</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/chart.umd.min.js"></script>
+<script src="assets/data.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="page-head">
+    <h1>👥 인력·조직 대시보드</h1>
+    <div class="meta">2026년 5월 기준 (총원 45명) · 인건비 단위: 백만 원</div>
+  </div>
+
+  <h2 class="sec">📌 인력 요약</h2>
+  <div class="kpis" id="kpis"></div>
+  <p class="note">채용 상세는 <a href="recruiting.html">🎯 2026 채용 대시보드</a> 참조</p>
+
+  <h2 class="sec">🏢 부서별 인원 / 💸 인건비</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>부서별 인원</h3>
+      <div class="sub">2026년 5월 · 명</div>
+      <div class="chart-box short"><canvas id="chart-dept-count"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>부서별 월 인건비</h3>
+      <div class="sub">2026년 5월 · 백만 원</div>
+      <div class="chart-box short"><canvas id="chart-dept-cost"></canvas></div>
+    </div>
+  </div>
+  <div class="tbl-wrap" style="margin-top:14px">
+    <table>
+      <thead><tr><th>부서</th><th class="num">인원</th><th class="num">월 인건비</th><th>비고</th></tr></thead>
+      <tbody id="tbl-dept"></tbody>
+    </table>
+  </div>
+
+  <h2 class="sec">📈 총원 · 인건비 추이</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>총원 추이</h3>
+      <div class="sub">월말 기준 · 명</div>
+      <div class="chart-box short"><canvas id="chart-headcount"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>인건비 추이</h3>
+      <div class="sub">월별 · 백만 원</div>
+      <div class="chart-box short"><canvas id="chart-labor"></canvas></div>
+    </div>
+  </div>
+
+  <h2 class="sec">🔄 월별 입·퇴사 현황</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>월</th><th class="num">총원</th><th class="num">입사</th><th class="num">퇴사</th><th class="num">인건비</th><th>비고</th></tr></thead>
+      <tbody id="tbl-people"></tbody>
+    </table>
+  </div>
+
+  <h2 class="sec">🎯 채용 파이프라인 요약</h2>
+  <div class="card">
+    <h3>단계별 후보자 수</h3>
+    <div class="sub">채용 대시보드 데이터 자동 반영 · 명</div>
+    <div class="chart-box short"><canvas id="chart-pipeline"></canvas></div>
+  </div>
+
+  <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+renderNav("people.html");
+const P = DATA.people, D = DATA.departments, R = DATA.recruiting;
+const last = P.headcount.length - 1, prev = last - 1;
+
+document.getElementById("kpis").innerHTML = `
+  <div class="kpi"><div class="label">총원</div><div class="value">${P.headcount[last]} <small>명</small></div><div class="delta up">▲ ${P.headcount[last]-P.headcount[prev]}명 <span class="vs">전월 대비</span></div></div>
+  <div class="kpi"><div class="label">인건비</div><div class="value">${P.laborCost[last]} <small>백만 원</small></div><div class="delta"><span class="vs">매출 대비 44.7%</span></div></div>
+  <div class="kpi"><div class="label">누적 퇴사율 (1~5월)</div><div class="value">${P.attritionPct}<small>%</small></div><div class="delta"><span class="vs">퇴사 1명 / 평균 인원 43.2명</span></div></div>
+  <div class="kpi"><div class="label">채용 진행</div><div class="value">4 <small>명 파이프라인</small></div><div class="delta"><span class="vs">오픈 포지션 3개</span></div></div>`;
+
+makeBarChart("chart-dept-count", D.map(d => d.name),
+  [{ label: "인원", data: D.map(d => d.count), backgroundColor: THEME.rev }],
+  { horizontal: true, unit: "명" });
+
+makeBarChart("chart-dept-cost", D.map(d => d.name),
+  [{ label: "월 인건비", data: D.map(d => d.cost), backgroundColor: THEME.profit }],
+  { horizontal: true });
+
+document.getElementById("tbl-dept").innerHTML = D.map(d => `
+  <tr><td><strong>${d.name}</strong></td><td class="num">${d.count}</td><td class="num">${d.cost}</td><td class="muted">${d.note || "—"}</td></tr>`).join("")
+  + `<tr><td><strong>합계</strong></td><td class="num"><strong>${D.reduce((s,d)=>s+d.count,0)}</strong></td><td class="num"><strong>${D.reduce((s,d)=>s+d.cost,0)}</strong></td><td></td></tr>`;
+
+makeLineChart("chart-headcount", DATA.monthLabels, [lineDS("총원", P.headcount, THEME.rev)], { unit: "명" });
+makeLineChart("chart-labor", DATA.monthLabels, [lineDS("인건비", P.laborCost, THEME.profit)], {});
+
+document.getElementById("tbl-people").innerHTML = DATA.months.map((m, i) => `
+  <tr><td>${m}</td><td class="num">${P.headcount[i]}</td>
+  <td class="num">${P.joins[i] ? `<span class="up">+${P.joins[i]}</span>` : 0}</td>
+  <td class="num">${P.leaves[i] ? `<span class="down">-${P.leaves[i]}</span>` : 0}</td>
+  <td class="num">${P.laborCost[i]}</td><td class="muted">${P.notes[i] || "—"}</td></tr>`).join("");
+
+const stageCounts = R.stages.map(s => R.candidates.filter(c => c.stage === s).length);
+makeBarChart("chart-pipeline", R.stages.map(s => s.replace(/^\d+\. /, "")),
+  [{ label: "후보자", data: stageCounts, backgroundColor: THEME.rev }],
+  { horizontal: true, unit: "명" });
+</script>
+</body>
+</html>

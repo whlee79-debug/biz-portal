@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎯 2026 채용 대시보드</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/chart.umd.min.js"></script>
+<script src="assets/data.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="page-head">
+    <h1>🎯 2026 채용 대시보드</h1>
+    <div class="meta">후보자 파이프라인과 채용 포지션을 한 곳에서 관리합니다.</div>
+  </div>
+
+  <h2 class="sec">🗂️ 후보자 파이프라인 (칸반)</h2>
+  <div class="kanban" id="kanban"></div>
+
+  <h2 class="sec">📊 단계별 현황</h2>
+  <div class="card">
+    <h3>단계별 후보자 수</h3>
+    <div class="sub">전체 후보자 6명 · 단위: 명</div>
+    <div class="chart-box short"><canvas id="chart-stages"></canvas></div>
+  </div>
+
+  <h2 class="sec">📋 전체 후보자</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>이름</th><th>지원 포지션</th><th>상태</th><th>지원일</th><th>지원 경로</th><th>평가</th><th>면접일</th><th>메모</th></tr></thead>
+      <tbody id="tbl-candidates"></tbody>
+    </table>
+  </div>
+
+  <h2 class="sec">💼 채용 포지션</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>포지션명</th><th>부서</th><th>고용형태</th><th class="num">채용 인원</th><th>오픈일</th><th>마감 목표일</th><th>진행 상태</th></tr></thead>
+      <tbody id="tbl-positions"></tbody>
+    </table>
+  </div>
+
+  <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+renderNav("recruiting.html");
+const R = DATA.recruiting;
+
+/* 칸반 */
+document.getElementById("kanban").innerHTML = R.stages.map(stage => {
+  const cards = R.candidates.filter(c => c.stage === stage);
+  return `<div class="kcol">
+    <h4><span>${stage}</span><span class="cnt">${cards.length}</span></h4>
+    ${cards.map(c => `<div class="kcard">
+      <div class="n">${c.name}</div>
+      <div class="p">${c.position}</div>
+      ${c.rating ? `<div class="m">평가 ${c.rating}</div>` : ""}
+      ${c.interview ? `<div class="m">🗓️ ${c.interview}</div>` : ""}
+      <div class="m">${c.memo}</div>
+    </div>`).join("") || '<div class="m" style="color:var(--muted);font-size:12.5px">후보자 없음</div>'}
+  </div>`;
+}).join("");
+
+/* 단계별 차트 */
+const counts = R.stages.map(s => R.candidates.filter(c => c.stage === s).length);
+makeBarChart("chart-stages", R.stages.map(s => s.replace(/^\d+\. /, "")),
+  [{ label: "후보자", data: counts, backgroundColor: THEME.rev }],
+  { horizontal: true, unit: "명" });
+
+/* 후보자 테이블 */
+const stagePill = s => s.startsWith("5") ? "green" : s.startsWith("6") ? "red" : s.startsWith("1") ? "gray" : "blue";
+document.getElementById("tbl-candidates").innerHTML = R.candidates
+  .slice().sort((a, b) => b.applied.localeCompare(a.applied))
+  .map(c => `
+  <tr><td><strong>${c.name}</strong></td><td>${c.position}</td>
+  <td><span class="pill ${stagePill(c.stage)}">${c.stage.replace(/^\d+\. /, "")}</span></td>
+  <td>${c.applied}</td><td>${c.channel}</td><td>${c.rating || "—"}</td>
+  <td>${c.interview || "—"}</td><td class="muted">${c.memo}</td></tr>`).join("");
+
+/* 포지션 테이블 */
+document.getElementById("tbl-positions").innerHTML = R.positions.map(p => `
+  <tr><td><strong>${p.name}</strong></td><td>${p.dept}</td><td>${p.type}</td>
+  <td class="num">${p.count}</td><td>${p.opened}</td><td>${p.target}</td>
+  <td><span class="pill ${p.status === "진행중" ? "blue" : "gray"}">${p.status}</span></td></tr>`).join("");
+</script>
+</body>
+</html>

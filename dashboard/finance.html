@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💰 월간 재무 요약 대시보드</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/chart.umd.min.js"></script>
+<script src="assets/data.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="page-head">
+    <h1>💰 월간 재무 요약 대시보드</h1>
+    <div class="meta">2026년 5월 기준 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
+  </div>
+
+  <h2 class="sec">📌 재무 요약</h2>
+  <div class="kpis" id="kpis"></div>
+
+  <h2 class="sec">📈 월별 매출·비용 추이</h2>
+  <div class="card">
+    <h3>매출 · 비용 · 영업이익</h3>
+    <div class="sub">2026년 1월 ~ 5월 · 백만 원</div>
+    <div class="chart-box"><canvas id="chart-core"></canvas></div>
+  </div>
+
+  <div class="grid2" style="margin-top:14px">
+    <div class="card">
+      <h3>현금 잔고 추이</h3>
+      <div class="sub">월말 기준 · 백만 원</div>
+      <div class="chart-box short"><canvas id="chart-cash"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>영업이익률</h3>
+      <div class="sub">월별 · %</div>
+      <div class="chart-box short"><canvas id="chart-margin"></canvas></div>
+    </div>
+  </div>
+
+  <h2 class="sec">🧾 고정비/변동비 구조</h2>
+  <div class="card">
+    <h3>월 비용 구성</h3>
+    <div class="sub">고정비(인건비·임대료 등) + 변동비(원자재·외주 등) · 백만 원</div>
+    <div class="chart-box"><canvas id="chart-cost"></canvas></div>
+  </div>
+  <div class="tbl-wrap" style="margin-top:14px">
+    <table>
+      <thead><tr><th>월</th><th class="num">고정비</th><th class="num">변동비</th><th class="num">합계</th><th class="num">고정비 비중</th></tr></thead>
+      <tbody id="tbl-cost"></tbody>
+    </table>
+  </div>
+
+  <h2 class="sec">🔮 현금흐름 예측 (향후 3개월)</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>월</th><th class="num">예상 유입</th><th class="num">예상 유출</th><th class="num">월말 예상 잔고</th><th>비고</th></tr></thead>
+      <tbody id="tbl-forecast"></tbody>
+    </table>
+  </div>
+  <p class="note">⚠️ 예측치는 5월 말 기준 가정이며, 의사결정 안건(임대 재계약·ERP 예산) 결과에 따라 변동됩니다.</p>
+
+  <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+renderNav("finance.html");
+const F = DATA.finance, CS = DATA.costStructure;
+const last = F.revenue.length - 1, prev = last - 1;
+
+document.getElementById("kpis").innerHTML = `
+  <div class="kpi"><div class="label">매출</div><div class="value">${F.revenue[last]} <small>백만 원</small></div><div class="delta up">▲ ${F.revenue[last]-F.revenue[prev]} <span class="vs">분기 최고</span></div></div>
+  <div class="kpi"><div class="label">비용</div><div class="value">${F.cost[last]} <small>백만 원</small></div><div class="delta down">▲ ${F.cost[last]-F.cost[prev]} <span class="vs">고정비 비중 66%</span></div></div>
+  <div class="kpi"><div class="label">영업이익</div><div class="value">${F.profit[last]} <small>백만 원</small></div><div class="delta up">▲ ${F.profit[last]-F.profit[prev]} <span class="vs">이익률 ${F.marginPct[last]}%</span></div></div>
+  <div class="kpi"><div class="label">현금 잔고</div><div class="value">${F.cash[last].toLocaleString()} <small>백만 원</small></div><div class="delta up">▲ ${F.cash[last]-F.cash[prev]} <span class="vs">운영자금 약 2.7개월분</span></div></div>`;
+
+makeLineChart("chart-core", DATA.monthLabels, [
+  lineDS("매출", F.revenue, THEME.rev),
+  lineDS("비용", F.cost, THEME.cost),
+  lineDS("영업이익", F.profit, THEME.profit)
+], { endLabels: true, zero: true });
+
+makeLineChart("chart-cash", DATA.monthLabels, [lineDS("현금 잔고", F.cash, THEME.rev)], {});
+makeLineChart("chart-margin", DATA.monthLabels, [lineDS("영업이익률", F.marginPct, THEME.profit)], { unit: "%" });
+
+makeBarChart("chart-cost", DATA.monthLabels, [
+  { label: "고정비", data: CS.fixed, backgroundColor: THEME.rev },
+  { label: "변동비", data: CS.variable, backgroundColor: THEME.profit }
+], { stacked: true, thickness: 34 });
+
+document.getElementById("tbl-cost").innerHTML = DATA.months.map((m, i) => {
+  const total = CS.fixed[i] + CS.variable[i];
+  return `<tr><td>${m}</td><td class="num">${CS.fixed[i]}</td><td class="num">${CS.variable[i]}</td>
+  <td class="num">${total}</td><td class="num">${(CS.fixed[i]/total*100).toFixed(1)}%</td></tr>`;
+}).join("");
+
+document.getElementById("tbl-forecast").innerHTML = DATA.cashForecast.map(f => `
+  <tr><td>${f.month}</td><td class="num">${f.inflow}</td><td class="num">${f.outflow}</td>
+  <td class="num"><strong>${f.balance.toLocaleString()}</strong></td><td class="muted">${f.note}</td></tr>`).join("");
+</script>
+</body>
+</html>
