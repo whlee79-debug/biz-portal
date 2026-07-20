@@ -12,7 +12,7 @@
 <div class="wrap">
   <div class="page-head">
     <h1>💰 월간 재무 요약 대시보드</h1>
-    <div class="meta">2026년 5월 기준 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
+    <div class="meta">2026년 6월 기준 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
   </div>
 
   <h2 class="sec">📌 재무 요약</h2>
@@ -21,7 +21,7 @@
   <h2 class="sec">📈 월별 매출·비용 추이</h2>
   <div class="card">
     <h3>매출 · 비용 · 영업이익</h3>
-    <div class="sub">2026년 1월 ~ 5월 · 백만 원</div>
+    <div class="sub">2026년 1월 ~ 6월 · 백만 원</div>
     <div class="chart-box"><canvas id="chart-core"></canvas></div>
   </div>
 
@@ -58,7 +58,7 @@
       <tbody id="tbl-forecast"></tbody>
     </table>
   </div>
-  <p class="note">⚠️ 예측치는 5월 말 기준 가정이며, 의사결정 안건(임대 재계약·ERP 예산) 결과에 따라 변동됩니다.</p>
+  <p class="note">⚠️ 예측치는 6월 말 기준 가정이며, 의사결정 안건(임대 재계약·ERP 가동 일정) 결과에 따라 변동됩니다.</p>
 
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
@@ -70,10 +70,10 @@ const F = DATA.finance, CS = DATA.costStructure;
 const last = F.revenue.length - 1, prev = last - 1;
 
 document.getElementById("kpis").innerHTML = `
-  <div class="kpi"><div class="label">매출</div><div class="value">${F.revenue[last]} <small>백만 원</small></div><div class="delta up">▲ ${F.revenue[last]-F.revenue[prev]} <span class="vs">분기 최고</span></div></div>
+  <div class="kpi"><div class="label">매출</div><div class="value">${F.revenue[last]} <small>백만 원</small></div><div class="delta up">▲ ${F.revenue[last]-F.revenue[prev]} <span class="vs">상반기 최고</span></div></div>
   <div class="kpi"><div class="label">비용</div><div class="value">${F.cost[last]} <small>백만 원</small></div><div class="delta down">▲ ${F.cost[last]-F.cost[prev]} <span class="vs">고정비 비중 66%</span></div></div>
   <div class="kpi"><div class="label">영업이익</div><div class="value">${F.profit[last]} <small>백만 원</small></div><div class="delta up">▲ ${F.profit[last]-F.profit[prev]} <span class="vs">이익률 ${F.marginPct[last]}%</span></div></div>
-  <div class="kpi"><div class="label">현금 잔고</div><div class="value">${F.cash[last].toLocaleString()} <small>백만 원</small></div><div class="delta up">▲ ${F.cash[last]-F.cash[prev]} <span class="vs">운영자금 약 2.7개월분</span></div></div>`;
+  <div class="kpi"><div class="label">현금 잔고</div><div class="value">${F.cash[last].toLocaleString()} <small>백만 원</small></div><div class="delta up">▲ ${F.cash[last]-F.cash[prev]} <span class="vs">운영자금 약 2.9개월분</span></div></div>`;
 
 makeLineChart("chart-core", DATA.monthLabels, [
   lineDS("매출", F.revenue, THEME.rev),

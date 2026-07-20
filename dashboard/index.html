@@ -12,15 +12,24 @@
 <div class="wrap">
   <div class="page-head">
     <h1>📊 경영 현황 종합 대시보드</h1>
-    <div class="meta">2026년 5월 경영 현황 보고 · 작성: 경영지원부 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
+    <div class="meta">2026년 7월 경영 현황 보고 (6월 실적 기준) · 작성: 경영지원부 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
   </div>
 
   <h2 class="sec">📌 경영 요약</h2>
   <div class="kpis" id="kpis"></div>
-  <blockquote style="margin-top:14px">💬 매출·영업이익 모두 분기 최고치 달성, 현금흐름 안정적. 이번 달 의사결정 필요 안건 3건.</blockquote>
+  <blockquote style="margin-top:14px">💬 상반기 최고 실적으로 마감, A사 연간 계약 체결로 하반기 매출 기반 확보. 이번 달 의사결정 필요 안건 3건.</blockquote>
 
   <h2 class="sec">🔴 의사결정 요청</h2>
   <div class="decisions" id="decisions"></div>
+
+  <h2 class="sec">👥 인력·조직 요약</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>구분</th><th>6월</th><th>비고</th></tr></thead>
+      <tbody id="tbl-people-summary"></tbody>
+    </table>
+  </div>
+  <p class="note">상세는 <a href="people.html">👥 인력·조직 대시보드</a> 참조</p>
 
   <h2 class="sec">📂 상세 데이터</h2>
   <div class="links">
@@ -44,7 +53,7 @@
   <h2 class="sec">📈 핵심 지표 추이</h2>
   <div class="card">
     <h3>매출 · 비용 · 영업이익</h3>
-    <div class="sub">2026년 1월 ~ 5월 · 백만 원</div>
+    <div class="sub">2026년 1월 ~ 6월 · 백만 원</div>
     <div class="chart-box"><canvas id="chart-core"></canvas></div>
   </div>
 
@@ -116,6 +125,15 @@ document.getElementById("tbl-projects").innerHTML = DATA.projects.map(p => `
   <td><span class="pill ${stPill(p.status)}">${p.status.slice(3)}</span></td>
   <td><div class="prog"><div class="bar"><i style="width:${p.progress}%"></i></div><span>${p.progress}%</span></div></td>
   <td>${p.due}</td><td class="muted">${p.note}</td></tr>`).join("");
+
+/* 인력·조직 요약 */
+const activeRecruits = DATA.recruiting.candidates.filter(c => /^[1-4]\./.test(c.stage)).length;
+const openPositions = DATA.recruiting.positions.filter(p => p.status === "진행중");
+document.getElementById("tbl-people-summary").innerHTML = `
+  <tr><td><strong>총원</strong></td><td>${P.headcount[last]}명</td><td class="muted">전월 대비 +${P.headcount[last] - P.headcount[prev]} (${P.notes[last]})</td></tr>
+  <tr><td><strong>인건비</strong></td><td>${P.laborCost[last]}</td><td class="muted">매출 대비 ${(P.laborCost[last] / F.revenue[last] * 100).toFixed(1)}%</td></tr>
+  <tr><td><strong>누적 퇴사율 (1~${last + 1}월)</strong></td><td>${P.attritionPct}%</td><td class="muted">퇴사 ${P.leaves.reduce((a, b) => a + b, 0)}명 / 평균 인원 ${(P.headcount.reduce((a, b) => a + b, 0) / P.headcount.length).toFixed(1)}명</td></tr>
+  <tr><td><strong>채용 진행</strong></td><td>${activeRecruits}명 파이프라인</td><td class="muted">오픈 포지션 ${openPositions.length}개 (${openPositions.map(p => p.name).join("·")})</td></tr>`;
 </script>
 </body>
 </html>

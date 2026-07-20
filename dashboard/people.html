@@ -12,7 +12,7 @@
 <div class="wrap">
   <div class="page-head">
     <h1>👥 인력·조직 대시보드</h1>
-    <div class="meta">2026년 5월 기준 (총원 45명) · 인건비 단위: 백만 원</div>
+    <div class="meta">2026년 6월 기준 (총원 46명) · 인건비 단위: 백만 원</div>
   </div>
 
   <h2 class="sec">📌 인력 요약</h2>
@@ -23,12 +23,12 @@
   <div class="grid2">
     <div class="card">
       <h3>부서별 인원</h3>
-      <div class="sub">2026년 5월 · 명</div>
+      <div class="sub">2026년 6월 · 명</div>
       <div class="chart-box short"><canvas id="chart-dept-count"></canvas></div>
     </div>
     <div class="card">
       <h3>부서별 월 인건비</h3>
-      <div class="sub">2026년 5월 · 백만 원</div>
+      <div class="sub">2026년 6월 · 백만 원</div>
       <div class="chart-box short"><canvas id="chart-dept-cost"></canvas></div>
     </div>
   </div>
@@ -79,9 +79,9 @@ const last = P.headcount.length - 1, prev = last - 1;
 
 document.getElementById("kpis").innerHTML = `
   <div class="kpi"><div class="label">총원</div><div class="value">${P.headcount[last]} <small>명</small></div><div class="delta up">▲ ${P.headcount[last]-P.headcount[prev]}명 <span class="vs">전월 대비</span></div></div>
-  <div class="kpi"><div class="label">인건비</div><div class="value">${P.laborCost[last]} <small>백만 원</small></div><div class="delta"><span class="vs">매출 대비 44.7%</span></div></div>
-  <div class="kpi"><div class="label">누적 퇴사율 (1~5월)</div><div class="value">${P.attritionPct}<small>%</small></div><div class="delta"><span class="vs">퇴사 1명 / 평균 인원 43.2명</span></div></div>
-  <div class="kpi"><div class="label">채용 진행</div><div class="value">4 <small>명 파이프라인</small></div><div class="delta"><span class="vs">오픈 포지션 3개</span></div></div>`;
+  <div class="kpi"><div class="label">인건비</div><div class="value">${P.laborCost[last]} <small>백만 원</small></div><div class="delta"><span class="vs">매출 대비 44.2%</span></div></div>
+  <div class="kpi"><div class="label">누적 퇴사율 (1~6월)</div><div class="value">${P.attritionPct}<small>%</small></div><div class="delta"><span class="vs">퇴사 1명 / 평균 인원 43.7명</span></div></div>
+  <div class="kpi"><div class="label">채용 진행</div><div class="value">4 <small>명 파이프라인</small></div><div class="delta"><span class="vs">오픈 포지션 3개 (백엔드·디자이너·마케터)</span></div></div>`;
 
 makeBarChart("chart-dept-count", D.map(d => d.name),
   [{ label: "인원", data: D.map(d => d.count), backgroundColor: THEME.rev }],
