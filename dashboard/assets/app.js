@@ -11,14 +11,14 @@
 const THEME = (function () {
   const dark = document.documentElement.getAttribute("data-theme") === "dark";
   return dark
-    ? { rev: "#3987e5", cost: "#e66767", profit: "#199e70", aux: "#c98500",
-        ink: "#f1efe9", ink2: "#b3ada0", muted: "#7d786d", grid: "#302c26", surface: "#221f1b" }
-    : { rev: "#2a78d6", cost: "#e34948", profit: "#1baf7a", aux: "#eda100",
-        ink: "#282828", ink2: "#6b665c", muted: "#9b968a", grid: "#e2dfd6", surface: "#f6f4ee" };
+    ? { rev: "#3987e5", cost: "#e66767", profit: "#22c55e", aux: "#c98500",
+        ink: "#f3f4f6", ink2: "#9ca3af", muted: "#6b7280", grid: "#242830", surface: "#171a1f" }
+    : { rev: "#2a78d6", cost: "#e34948", profit: "#16a34a", aux: "#eda100",
+        ink: "#111827", ink2: "#6b7280", muted: "#9ca3af", grid: "#eef0f2", surface: "#ffffff" };
 })();
 
 if (window.Chart) {
-  Chart.defaults.font.family = 'system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif';
+  Chart.defaults.font.family = '"Inter", "Pretendard", system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif';
   Chart.defaults.font.size = 12.5;
   Chart.defaults.color = THEME.muted;
   Chart.defaults.borderColor = THEME.grid;
@@ -122,21 +122,36 @@ function makeBarChart(id, labels, datasets, opts) {
   });
 }
 
-/* 공통 내비게이션 */
+/* 공통 사이드바 내비게이션 */
 function renderNav(active) {
+  const I = {
+    home: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg>',
+    chart: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4"/><path d="M4 20h16"/><path d="M8 16v-4"/><path d="M13 16V8"/><path d="M18 16v-6"/></svg>',
+    coin: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>',
+    people: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 5.5a3.2 3.2 0 0 1 0 6"/><path d="M17 14.5a5.5 5.5 0 0 1 3.5 5.5"/></svg>',
+    target: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.6" fill="currentColor" stroke="none"/></svg>',
+    chat: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a2 2 0 0 1-2 2H8l-4 4V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg>'
+  };
   const tabs = [
-    ["index.html", "종합 현황"],
-    ["finance.html", "재무"],
-    ["people.html", "인력·조직"],
-    ["recruiting.html", "채용"]
+    ["index.html", "종합 현황", I.chart],
+    ["finance.html", "재무", I.coin],
+    ["people.html", "인력·조직", I.people],
+    ["recruiting.html", "채용", I.target]
   ];
-  const el = document.createElement("nav");
-  el.innerHTML = `<div class="inner">
-    <a class="brand" href="/">🏠 포털</a>
-    ${tabs.map(([href, label]) =>
-      `<a class="tab${active === href ? " active" : ""}" href="${href}">${label}</a>`).join("")}
-    <span class="spacer"></span>
-    <a class="tab" href="/chatbot/">💬 HR 챗봇</a>
-  </div>`;
+  const el = document.createElement("aside");
+  el.className = "sidebar";
+  el.innerHTML = `
+    <a class="brand" href="/">
+      <span class="logo">◆</span>
+      <span><b>Biz Portal</b><small>Executive Dashboard</small></span>
+    </a>
+    <nav class="side-nav">
+      ${tabs.map(([href, label, icon]) =>
+        `<a class="${active === href ? "active" : ""}" href="${href}">${icon}<span>${label}</span></a>`).join("")}
+    </nav>
+    <div class="side-foot">
+      <a href="/chatbot/">${I.chat}<span class="ftxt">HR 챗봇</span></a>
+      <a href="/">${I.home}<span class="ftxt">포털 홈</span></a>
+    </div>`;
   document.body.prepend(el);
 }

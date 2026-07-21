@@ -4,115 +4,121 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>통합 업무 포털</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root{
-  --page:#f1efe9; --surface:#f6f4ee; --ink:#282828; --ink2:#6b665c; --muted:#9b968a;
-  --line:rgba(40,40,40,0.14); --line-strong:rgba(40,40,40,0.28); --accent:#bd5b3d;
-  --serif:"Iowan Old Style","Apple Garamond",Georgia,"Times New Roman",serif;
-  --sans:system-ui,-apple-system,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  --page:#f4f5f7; --surface:#ffffff; --ink:#111827; --ink2:#6b7280; --muted:#9ca3af;
+  --border:#e8eaed; --accent:#16a34a; --accent-strong:#15803d; --accent-soft:#dcfce7;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 1px 3px rgba(16,24,40,.06);
+  --shadow-lg:0 10px 30px rgba(16,24,40,.10);
+  --font:"Inter","Pretendard",system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
 }
 @media (prefers-color-scheme: dark){
-  :root{ --page:#1a1815; --surface:#221f1b; --ink:#f1efe9; --ink2:#b3ada0; --muted:#7d786d;
-    --line:rgba(241,239,233,0.15); --line-strong:rgba(241,239,233,0.30); --accent:#d47a5a; }
+  :root{ --page:#0f1115; --surface:#171a1f; --ink:#f3f4f6; --ink2:#9ca3af; --muted:#6b7280;
+    --border:#242830; --accent:#22c55e; --accent-strong:#4ade80; --accent-soft:rgba(34,197,94,.16);
+    --shadow:0 1px 3px rgba(0,0,0,.3); --shadow-lg:0 12px 34px rgba(0,0,0,.5); }
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-font-smoothing:antialiased}
 body{
-  font-family:var(--sans); background:var(--page); color:var(--ink);
-  min-height:100vh; display:flex; flex-direction:column;
-  padding:clamp(20px,4vw,44px);
+  font-family:var(--font); background:var(--page); color:var(--ink);
+  min-height:100vh; display:flex; flex-direction:column; padding:clamp(20px,4vw,40px);
 }
-.label{
-  font-size:11px; font-weight:700; letter-spacing:0.32em; text-transform:uppercase;
-  color:var(--muted);
-}
+.shell{max-width:1080px; width:100%; margin:0 auto; flex:1; display:flex; flex-direction:column}
+.label{font-size:11.5px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent-strong)}
+[data-theme] .label{color:var(--accent)}
 
 /* top bar */
-.topbar{display:flex; align-items:center; justify-content:space-between; padding-bottom:clamp(28px,6vh,64px)}
-.brand{display:flex; align-items:center; gap:11px; font-weight:800; letter-spacing:-0.01em; font-size:15px}
+.topbar{display:flex; align-items:center; justify-content:space-between; padding-bottom:clamp(40px,10vh,96px)}
+.brand{display:flex; align-items:center; gap:11px; font-weight:700; letter-spacing:-0.01em; font-size:15px}
 .brand .mark{
-  width:26px; height:26px; border:1.5px solid var(--ink); border-radius:50%;
-  display:flex; align-items:center; justify-content:center; font-size:13px;
-  transform:rotate(-8deg);
+  width:32px; height:32px; border-radius:9px; background:var(--accent); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:16px;
 }
+.brand small{display:block; font-size:11px; color:var(--muted); font-weight:500}
+.topnav{display:flex; gap:8px}
+.topnav a{
+  text-decoration:none; color:var(--ink2); font-size:13.5px; font-weight:500;
+  padding:8px 14px; border-radius:8px; transition:background .15s,color .15s;
+}
+.topnav a:hover{background:var(--surface); color:var(--ink)}
 
 /* hero */
-.hero{max-width:1180px; width:100%; margin:0 auto}
-.hero-top{display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--line); padding-bottom:14px; margin-bottom:clamp(30px,7vh,68px)}
+.hero{margin-bottom:clamp(36px,7vh,64px)}
+.hero .eyebrow{margin-bottom:18px}
 .hero h1{
-  font-family:var(--serif); font-weight:400; font-size:clamp(38px,8.5vw,104px);
-  line-height:0.98; letter-spacing:-0.02em; margin-bottom:clamp(22px,4vh,40px);
+  font-weight:800; font-size:clamp(34px,6vw,60px); line-height:1.05; letter-spacing:-0.03em;
+  max-width:14ch;
 }
-.hero h1 em{font-style:italic; color:var(--accent)}
-.hero-sub{display:flex; gap:clamp(24px,5vw,80px); flex-wrap:wrap; max-width:640px; margin-bottom:clamp(40px,8vh,84px)}
-.hero-sub p{font-size:clamp(14px,1.6vw,16px); color:var(--ink2); line-height:1.7; max-width:460px}
+.hero h1 .g{color:var(--accent)}
+.hero p{font-size:clamp(15px,1.7vw,18px); color:var(--ink2); line-height:1.7; max-width:540px; margin-top:20px; font-weight:450}
 
 /* entries */
-.entries{display:grid; grid-template-columns:1fr 1fr; gap:0; border-top:1px solid var(--line-strong)}
-@media (max-width:720px){.entries{grid-template-columns:1fr}}
+.entries{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+@media (max-width:680px){.entries{grid-template-columns:1fr}}
 .entry{
-  position:relative; display:flex; flex-direction:column; min-height:clamp(240px,42vh,340px);
-  padding:clamp(26px,3vw,40px); text-decoration:none; color:var(--ink);
-  border-bottom:1px solid var(--line-strong);
-  transition:background .45s cubic-bezier(.2,.7,.3,1);
-  overflow:hidden;
+  position:relative; display:flex; flex-direction:column; min-height:clamp(220px,38vh,300px);
+  padding:clamp(24px,2.6vw,32px); text-decoration:none; color:var(--ink);
+  background:var(--surface); border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow);
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s;
 }
-.entry + .entry{border-left:1px solid var(--line-strong)}
-@media (max-width:720px){.entry + .entry{border-left:none}}
-.entry:hover{background:var(--surface)}
-.entry-head{display:flex; justify-content:space-between; align-items:flex-start}
-.entry-idx{font-family:var(--serif); font-size:clamp(15px,1.5vw,18px); color:var(--muted)}
-.entry-emoji{font-size:26px; line-height:1; transition:transform .45s cubic-bezier(.2,.7,.3,1)}
-.entry:hover .entry-emoji{transform:translateY(-3px) rotate(-6deg)}
+.entry:hover{transform:translateY(-4px); box-shadow:var(--shadow-lg); border-color:var(--accent)}
+.entry-head{display:flex; justify-content:space-between; align-items:center}
+.entry-ico{
+  width:46px; height:46px; border-radius:12px; background:var(--accent-soft); color:var(--accent-strong);
+  display:flex; align-items:center; justify-content:center; font-size:22px;
+}
+[data-theme] .entry-ico{color:var(--accent)}
+.entry-idx{font-size:13px; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums}
 .entry-body{margin-top:auto}
-.entry h2{
-  font-family:var(--serif); font-weight:400; font-size:clamp(26px,3.4vw,40px);
-  letter-spacing:-0.01em; line-height:1.05; margin:18px 0 12px;
-}
-.entry p{font-size:13.5px; color:var(--ink2); line-height:1.65; max-width:340px}
+.entry h2{font-weight:700; font-size:clamp(20px,2.4vw,26px); letter-spacing:-0.02em; margin:16px 0 10px}
+.entry p{font-size:13.5px; color:var(--ink2); line-height:1.6; max-width:340px}
 .entry-cta{
-  display:inline-flex; align-items:center; gap:10px; margin-top:22px;
-  font-size:11px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase;
+  display:inline-flex; align-items:center; gap:8px; margin-top:20px;
+  font-size:13px; font-weight:600; color:var(--accent-strong);
 }
-.entry-cta .arrow{
-  display:inline-block; transition:transform .45s cubic-bezier(.2,.7,.3,1);
-}
-.entry:hover .entry-cta .arrow{transform:translateX(8px); color:var(--accent)}
-.entry:hover .entry-cta{color:var(--accent)}
+[data-theme] .entry-cta{color:var(--accent)}
+.entry-cta .arrow{transition:transform .18s ease}
+.entry:hover .entry-cta .arrow{transform:translateX(6px)}
 
 /* footer */
 footer{
-  max-width:1180px; width:100%; margin:clamp(30px,6vh,56px) auto 0;
+  max-width:1080px; width:100%; margin:clamp(32px,6vh,56px) auto 0;
   display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
-  padding-top:20px; border-top:1px solid var(--line);
+  padding-top:20px; border-top:1px solid var(--border);
 }
-footer .fine{font-size:11.5px; color:var(--muted); letter-spacing:0.01em}
+footer .fine{font-size:12px; color:var(--muted)}
+footer .who{font-size:12px; color:var(--ink2); font-weight:600}
 </style>
 </head>
 <body>
-  <div class="hero">
+  <div class="shell">
     <div class="topbar">
-      <div class="brand"><span class="mark">✦</span> BIZ PORTAL</div>
-      <span class="label">Portfolio — 2026</span>
+      <div class="brand">
+        <span class="mark">◆</span>
+        <span>Biz Portal<small>Executive Workspace</small></span>
+      </div>
+      <div class="topnav">
+        <a href="/dashboard/">대시보드</a>
+        <a href="/chatbot/">HR 챗봇</a>
+      </div>
     </div>
 
-    <div class="hero-top">
-      <span class="label">통합 업무 포털</span>
-      <span class="label">Two Services · One Place</span>
-    </div>
-
-    <h1>경영을 읽고,<br>사람을 <em>돕다</em>.</h1>
-
-    <div class="hero-sub">
+    <div class="hero">
+      <div class="eyebrow"><span class="label">Executive Intelligence · 2026</span></div>
+      <h1>경영을 읽고,<br><span class="g">사람을 돕다.</span></h1>
       <p>실시간 경영 인텔리전스와 대화형 HR 어시스턴트를 하나의 워크스페이스에서.
-         숫자와 규정 사이의 거리를 좁힙니다.</p>
+         숫자와 규정 사이의 거리를 좁혀 <b>30초 안에</b> 판단할 수 있게 합니다.</p>
     </div>
 
     <div class="entries">
       <a class="entry" href="/dashboard/">
         <div class="entry-head">
+          <span class="entry-ico">📊</span>
           <span class="entry-idx">01</span>
-          <span class="entry-emoji">📊</span>
         </div>
         <div class="entry-body">
           <span class="label">경영 인텔리전스</span>
@@ -124,8 +130,8 @@ footer .fine{font-size:11.5px; color:var(--muted); letter-spacing:0.01em}
 
       <a class="entry" href="/chatbot/">
         <div class="entry-head">
+          <span class="entry-ico">💬</span>
           <span class="entry-idx">02</span>
-          <span class="entry-emoji">💬</span>
         </div>
         <div class="entry-body">
           <span class="label">HR 어시스턴트</span>
@@ -139,7 +145,7 @@ footer .fine{font-size:11.5px; color:var(--muted); letter-spacing:0.01em}
 
   <footer>
     <span class="fine">Portfolio Demo — 모든 데이터는 가상의 데모 데이터입니다.</span>
-    <span class="label">Wonho Lee</span>
+    <span class="who">Wonho Lee</span>
   </footer>
 </body>
 </html>
