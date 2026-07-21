@@ -136,7 +136,8 @@ function renderNav(active) {
     ["index.html", "종합 현황", I.chart],
     ["finance.html", "재무", I.coin],
     ["people.html", "인력·조직", I.people],
-    ["recruiting.html", "채용", I.target]
+    ["recruiting.html", "채용", I.target],
+    ["/chatbot/", "HR 챗봇", I.chat]
   ];
   const el = document.createElement("aside");
   el.className = "sidebar";
@@ -150,7 +151,6 @@ function renderNav(active) {
         `<a class="${active === href ? "active" : ""}" href="${href}">${icon}<span>${label}</span></a>`).join("")}
     </nav>
     <div class="side-foot">
-      <a href="/chatbot/">${I.chat}<span class="ftxt">HR 챗봇</span></a>
       <a href="/">${I.home}<span class="ftxt">포털 홈</span></a>
     </div>`;
   document.body.prepend(el);
