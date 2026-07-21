@@ -12,9 +12,9 @@ const THEME = (function () {
   const dark = document.documentElement.getAttribute("data-theme") === "dark";
   return dark
     ? { rev: "#3987e5", cost: "#e66767", profit: "#199e70", aux: "#c98500",
-        ink: "#ffffff", ink2: "#c3c2b7", muted: "#898781", grid: "#2c2c2a", surface: "#1a1a19" }
+        ink: "#f1efe9", ink2: "#b3ada0", muted: "#7d786d", grid: "#302c26", surface: "#221f1b" }
     : { rev: "#2a78d6", cost: "#e34948", profit: "#1baf7a", aux: "#eda100",
-        ink: "#0b0b0b", ink2: "#52514e", muted: "#898781", grid: "#e1e0d9", surface: "#fcfcfb" };
+        ink: "#282828", ink2: "#6b665c", muted: "#9b968a", grid: "#e2dfd6", surface: "#f6f4ee" };
 })();
 
 if (window.Chart) {
