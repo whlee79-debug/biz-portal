@@ -112,11 +112,11 @@ function makeBarChart(id, labels, datasets, opts) {
       },
       scales: {
         x: o.horizontal
-          ? { beginAtZero: true, grid: { color: THEME.grid }, border: { display: false } }
+          ? { beginAtZero: true, grid: { color: THEME.grid }, border: { display: false }, ticks: { precision: 0 } }
           : { stacked: !!o.stacked, grid: { display: false }, border: { color: THEME.grid } },
         y: o.horizontal
           ? { grid: { display: false }, border: { color: THEME.grid } }
-          : { stacked: !!o.stacked, beginAtZero: true, grid: { color: THEME.grid }, border: { display: false } }
+          : { stacked: !!o.stacked, beginAtZero: true, grid: { color: THEME.grid }, border: { display: false }, ticks: { precision: 0 } }
       }
     }
   });
