@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>👥 인력·조직 대시보드</title>
-<link rel="stylesheet" href="assets/style.css?v=4">
+<link rel="stylesheet" href="assets/style.css?v=7">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=4"></script>
+<script src="assets/data.js?v=7"></script>
 </head>
 <body>
 <div class="wrap">
@@ -15,11 +15,11 @@
     <div class="meta">2026년 6월 기준 (총원 46명) · 인건비 단위: 백만 원</div>
   </div>
 
-  <h2 class="sec">📌 인력 요약</h2>
+  <h2 class="sec"><span class="sec-no">01</span>인력 요약</h2>
   <div class="kpis" id="kpis"></div>
-  <p class="note">채용 상세는 <a href="recruiting.html">🎯 2026 채용 대시보드</a> 참조</p>
+  <p class="note">채용 상세는 <a href="recruiting.html">2026 채용 대시보드</a> 참조</p>
 
-  <h2 class="sec">🏢 부서별 인원 / 💸 인건비</h2>
+  <h2 class="sec"><span class="sec-no">02</span>부서별 인원 / 인건비</h2>
   <div class="grid2">
     <div class="card">
       <h3>부서별 인원</h3>
@@ -39,7 +39,7 @@
     </table>
   </div>
 
-  <h2 class="sec">📈 총원 · 인건비 추이</h2>
+  <h2 class="sec"><span class="sec-no">03</span>총원 · 인건비 추이</h2>
   <div class="grid2">
     <div class="card">
       <h3>총원 추이</h3>
@@ -53,7 +53,7 @@
     </div>
   </div>
 
-  <h2 class="sec">🔄 월별 입·퇴사 현황</h2>
+  <h2 class="sec"><span class="sec-no">04</span>월별 입·퇴사 현황</h2>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>월</th><th class="num">총원</th><th class="num">입사</th><th class="num">퇴사</th><th class="num">인건비</th><th>비고</th></tr></thead>
@@ -61,7 +61,7 @@
     </table>
   </div>
 
-  <h2 class="sec">🎯 채용 파이프라인 요약</h2>
+  <h2 class="sec"><span class="sec-no">05</span>채용 파이프라인 요약</h2>
   <div class="card">
     <h3>단계별 후보자 수</h3>
     <div class="sub">채용 대시보드 데이터 자동 반영 · 명</div>
@@ -71,7 +71,7 @@
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=6"></script>
+<script src="assets/app.js?v=7"></script>
 <script>
 renderNav("people.html");
 const P = DATA.people, D = DATA.departments, R = DATA.recruiting;

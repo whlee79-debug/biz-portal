@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>💰 월간 재무 요약 대시보드</title>
-<link rel="stylesheet" href="assets/style.css?v=4">
+<link rel="stylesheet" href="assets/style.css?v=7">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=4"></script>
+<script src="assets/data.js?v=7"></script>
 </head>
 <body>
 <div class="wrap">
@@ -15,10 +15,10 @@
     <div class="meta">2026년 6월 기준 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
   </div>
 
-  <h2 class="sec">📌 재무 요약</h2>
+  <h2 class="sec"><span class="sec-no">01</span>재무 요약</h2>
   <div class="kpis" id="kpis"></div>
 
-  <h2 class="sec">📈 월별 매출·비용 추이</h2>
+  <h2 class="sec"><span class="sec-no">02</span>월별 매출·비용 추이</h2>
   <div class="card">
     <h3>매출 · 비용 · 영업이익</h3>
     <div class="sub">2026년 1월 ~ 6월 · 백만 원</div>
@@ -38,7 +38,7 @@
     </div>
   </div>
 
-  <h2 class="sec">🧾 고정비/변동비 구조</h2>
+  <h2 class="sec"><span class="sec-no">03</span>고정비/변동비 구조</h2>
   <div class="card">
     <h3>월 비용 구성</h3>
     <div class="sub">고정비(인건비·임대료 등) + 변동비(원자재·외주 등) · 백만 원</div>
@@ -51,19 +51,19 @@
     </table>
   </div>
 
-  <h2 class="sec">🔮 현금흐름 예측 (향후 3개월)</h2>
+  <h2 class="sec"><span class="sec-no">04</span>현금흐름 예측 (향후 3개월)</h2>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>월</th><th class="num">예상 유입</th><th class="num">예상 유출</th><th class="num">월말 예상 잔고</th><th>비고</th></tr></thead>
       <tbody id="tbl-forecast"></tbody>
     </table>
   </div>
-  <p class="note">⚠️ 예측치는 6월 말 기준 가정이며, 의사결정 안건(임대 재계약·ERP 가동 일정) 결과에 따라 변동됩니다.</p>
+  <p class="note">예측치는 6월 말 기준 가정이며, 의사결정 안건(임대 재계약·ERP 가동 일정) 결과에 따라 변동됩니다.</p>
 
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=6"></script>
+<script src="assets/app.js?v=7"></script>
 <script>
 renderNav("finance.html");
 const F = DATA.finance, CS = DATA.costStructure;

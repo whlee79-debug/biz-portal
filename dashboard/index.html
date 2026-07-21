@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>📊 경영 현황 종합 대시보드</title>
-<link rel="stylesheet" href="assets/style.css?v=4">
+<link rel="stylesheet" href="assets/style.css?v=7">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=4"></script>
+<script src="assets/data.js?v=7"></script>
 </head>
 <body>
 <div class="wrap">
@@ -15,49 +15,49 @@
     <div class="meta">2026년 7월 경영 현황 보고 (6월 실적 기준) · 작성: 경영지원부 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
   </div>
 
-  <h2 class="sec">📌 경영 요약</h2>
+  <h2 class="sec"><span class="sec-no">01</span>경영 요약</h2>
   <div class="kpis" id="kpis"></div>
-  <blockquote style="margin-top:14px">💬 상반기 최고 실적으로 마감, A사 연간 계약 체결로 하반기 매출 기반 확보. 이번 달 의사결정 필요 안건 3건.</blockquote>
+  <blockquote style="margin-top:14px">상반기 최고 실적으로 마감, A사 연간 계약 체결로 하반기 매출 기반 확보. 이번 달 의사결정 필요 안건 3건.</blockquote>
 
-  <h2 class="sec">🔴 의사결정 요청</h2>
+  <h2 class="sec"><span class="sec-no">02</span>의사결정 요청</h2>
   <div class="decisions" id="decisions"></div>
 
-  <h2 class="sec">👥 인력·조직 요약</h2>
+  <h2 class="sec"><span class="sec-no">03</span>인력·조직 요약</h2>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>구분</th><th>6월</th><th>비고</th></tr></thead>
       <tbody id="tbl-people-summary"></tbody>
     </table>
   </div>
-  <p class="note">상세는 <a href="people.html">👥 인력·조직 대시보드</a> 참조</p>
+  <p class="note">상세는 <a href="people.html">인력·조직 대시보드</a> 참조</p>
 
-  <h2 class="sec">📂 상세 데이터</h2>
+  <h2 class="sec"><span class="sec-no">04</span>상세 데이터</h2>
   <div class="links">
     <a class="link-card" href="finance.html">
-      <div class="t">💰 월간 재무 요약 대시보드</div>
+      <div class="t">월간 재무 요약 대시보드</div>
       <div class="d">매출·비용 추이, 고정비/변동비, 현금흐름 예측</div>
       <span class="arrow">자세히 보기 →</span>
     </a>
     <a class="link-card" href="people.html">
-      <div class="t">👥 인력·조직 대시보드</div>
+      <div class="t">인력·조직 대시보드</div>
       <div class="d">부서별 인원, 인건비 추이, 퇴사율, 채용 파이프라인</div>
       <span class="arrow">자세히 보기 →</span>
     </a>
     <a class="link-card" href="recruiting.html">
-      <div class="t">🎯 2026 채용 대시보드</div>
+      <div class="t">2026 채용 대시보드</div>
       <div class="d">후보자 파이프라인·포지션 관리</div>
       <span class="arrow">자세히 보기 →</span>
     </a>
   </div>
 
-  <h2 class="sec">📈 핵심 지표 추이</h2>
+  <h2 class="sec"><span class="sec-no">05</span>핵심 지표 추이</h2>
   <div class="card">
     <h3>매출 · 비용 · 영업이익</h3>
     <div class="sub">2026년 1월 ~ 6월 · 백만 원</div>
     <div class="chart-box"><canvas id="chart-core"></canvas></div>
   </div>
 
-  <h2 class="sec">💰 월별 재무 현황</h2>
+  <h2 class="sec"><span class="sec-no">06</span>월별 재무 현황</h2>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>월</th><th class="num">매출</th><th class="num">비용</th><th class="num">영업이익</th><th class="num">영업이익률</th><th class="num">현금 잔고</th><th>비고</th></tr></thead>
@@ -65,7 +65,7 @@
     </table>
   </div>
 
-  <h2 class="sec">📁 주요 프로젝트·계약</h2>
+  <h2 class="sec"><span class="sec-no">07</span>주요 프로젝트·계약</h2>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>항목</th><th>구분</th><th>담당 부서</th><th>상태</th><th>진행률</th><th>마감일</th><th>리스크/비고</th></tr></thead>
@@ -76,7 +76,7 @@
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=6"></script>
+<script src="assets/app.js?v=7"></script>
 <script>
 renderNav("index.html");
 const F = DATA.finance, P = DATA.people;

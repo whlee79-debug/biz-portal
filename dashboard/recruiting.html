@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🎯 2026 채용 대시보드</title>
-<link rel="stylesheet" href="assets/style.css?v=4">
+<link rel="stylesheet" href="assets/style.css?v=7">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=4"></script>
+<script src="assets/data.js?v=7"></script>
 </head>
 <body>
 <div class="wrap">
@@ -15,17 +15,17 @@
     <div class="meta">후보자 파이프라인과 채용 포지션을 한 곳에서 관리합니다.</div>
   </div>
 
-  <h2 class="sec">🗂️ 후보자 파이프라인 (칸반)</h2>
+  <h2 class="sec"><span class="sec-no">01</span>후보자 파이프라인 (칸반)</h2>
   <div class="kanban" id="kanban"></div>
 
-  <h2 class="sec">📊 단계별 현황</h2>
+  <h2 class="sec"><span class="sec-no">02</span>단계별 현황</h2>
   <div class="card">
     <h3>단계별 후보자 수</h3>
     <div class="sub">전체 후보자 7명 · 단위: 명</div>
     <div class="chart-box short"><canvas id="chart-stages"></canvas></div>
   </div>
 
-  <h2 class="sec">📋 전체 후보자</h2>
+  <h2 class="sec"><span class="sec-no">03</span>전체 후보자</h2>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>이름</th><th>지원 포지션</th><th>상태</th><th>지원일</th><th>지원 경로</th><th>평가</th><th>면접일</th><th>메모</th></tr></thead>
@@ -33,7 +33,7 @@
     </table>
   </div>
 
-  <h2 class="sec">💼 채용 포지션</h2>
+  <h2 class="sec"><span class="sec-no">04</span>채용 포지션</h2>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>포지션명</th><th>부서</th><th>고용형태</th><th class="num">채용 인원</th><th>오픈일</th><th>마감 목표일</th><th>진행 상태</th></tr></thead>
@@ -44,7 +44,7 @@
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=6"></script>
+<script src="assets/app.js?v=7"></script>
 <script>
 renderNav("recruiting.html");
 const R = DATA.recruiting;
@@ -58,7 +58,7 @@ document.getElementById("kanban").innerHTML = R.stages.map(stage => {
       <div class="n">${c.name}</div>
       <div class="p">${c.position}</div>
       ${c.rating ? `<div class="m">평가 ${c.rating}</div>` : ""}
-      ${c.interview ? `<div class="m">🗓️ ${c.interview}</div>` : ""}
+      ${c.interview ? `<div class="m">면접 ${c.interview}</div>` : ""}
       <div class="m">${c.memo}</div>
     </div>`).join("") || '<div class="m" style="color:var(--muted);font-size:12.5px">후보자 없음</div>'}
   </div>`;
