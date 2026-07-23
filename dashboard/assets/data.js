@@ -1,4 +1,5 @@
-/* 2026년 7월 보고 — 6월 실적 기준 (노션 '경영 현황 종합 대시보드' 동기화, 단위: 백만 원) */
+/* 2026년 7월 경영지원 보고 — 6월 실적 기준 (매트리스 제조공장, 단위: 백만 원)
+   노션 '경영 현황 종합 대시보드' 동기화 · 모든 수치는 가상 데모 데이터 */
 const DATA = {
   asOf: "2026년 6월",
   months: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
@@ -10,7 +11,7 @@ const DATA = {
     profit: [60, 80, 90, 75, 110, 125],
     cash: [850, 910, 960, 1010, 1080, 1170],
     marginPct: [14.3, 17.8, 18.8, 16.3, 21.6, 23.6],
-    notes: ["연초 계약 갱신 집중", "", "신규 거래처 2곳 추가", "ERP 1차 비용 집행", "분기 최고 실적", "A사 연간 계약 체결, 상반기 최고 실적"]
+    notes: ["연초 계약 갱신 집중", "", "신규 거래처 2곳 추가", "ERP 1차 비용 집행", "분기 최고 실적", "A사(호텔체인) 연간 계약 체결, 상반기 최고 실적"]
   },
 
   costStructure: {
@@ -18,59 +19,95 @@ const DATA = {
     variable: [115, 125, 138, 127, 136, 138]
   },
 
+  /* 제조원가 — 총비용 = 제조원가 + 판관비 로 정합 */
+  manufacturing: {
+    output: [1180, 1260, 1340, 1300, 1440, 1500],        // 생산량(대)
+    material: [175, 180, 192, 188, 200, 205],            // 재료비
+    labor: [88, 90, 94, 94, 98, 100],                    // 노무비(생산직)
+    overhead: [40, 42, 44, 44, 45, 45],                  // 제조경비(감가상각·전력·수선)
+    total: [303, 312, 330, 326, 343, 350],               // 제조원가 합계
+    sga: [57, 58, 60, 59, 57, 55],                       // 판매관리비 (= 총비용 - 제조원가)
+    unitCost: [25.7, 24.8, 24.6, 25.1, 23.8, 23.3],      // 대당 제조원가(만 원)
+    notes: ["", "", "신규 라인 시운전", "폼 단가 인상 반영", "가동률 개선", "규모 효과로 대당 원가 최저"]
+  },
+
+  /* 주요 원자재 단가 지수 (2026-01 = 100) */
+  materialIndex: {
+    foam: [100.0, 101.6, 104.7, 107.8, 110.0, 108.8],    // 우레탄폼
+    spring: [100.0, 100.0, 103.9, 105.3, 106.6, 105.3],  // 포켓스프링(강선)
+    fabric: [100.0, 101.3, 102.6, 103.9, 107.9, 109.2]   // 원단
+  },
+
   cashForecast: [
     { month: "2026-07", inflow: 540, outflow: 455, balance: 1255, note: "A사 연간 계약 첫 월 정산 반영" },
-    { month: "2026-08", inflow: 520, outflow: 475, balance: 1300, note: "ERP 잔여 예산·임대 재계약 결과 반영" },
-    { month: "2026-09", inflow: 555, outflow: 465, balance: 1390, note: "하반기 채용 인건비 반영" }
+    { month: "2026-08", inflow: 520, outflow: 475, balance: 1300, note: "ERP 잔여 예산·공장 임대 재계약 결과 반영" },
+    { month: "2026-09", inflow: 555, outflow: 465, balance: 1390, note: "하반기 생산직 충원 인건비 반영" }
   ],
 
   people: {
     headcount: [42, 42, 43, 44, 45, 46],
-    laborCost: [210, 210, 216, 222, 228, 234],
+    laborCost: [113, 115, 120, 120, 125, 127],           // 전사 인건비(노무비 + 사무직)
     joins: [1, 0, 2, 1, 1, 1],
     leaves: [0, 0, 1, 0, 0, 0],
-    notes: ["", "", "영업 1명 퇴사", "", "인사 인턴 정규 전환", "백엔드 개발자 1명 입사"],
+    notes: ["", "", "생산직 1명 퇴사", "", "경영지원 인턴 정규 전환", "봉제·조립 생산직 1명 입사"],
     attritionPct: 2.3
   },
 
+  /* 교대·근태 (경영지원 소관: 인건비 변동 관리) */
+  shift: {
+    fieldStaff: [30, 30, 31, 32, 33, 34],                // 생산직(현장)
+    officeStaff: [12, 12, 12, 12, 12, 12],               // 사무직
+    overtimeHours: [980, 950, 1180, 1120, 1290, 1340],   // 잔업 시간(생산직 합계)
+    holidayHours: [180, 160, 240, 210, 290, 320],        // 특근(휴일근로) 시간
+    allowance: [9, 8, 11, 10, 12, 13]                    // 잔업·특근 수당(백만 원)
+  },
+
+  /* 안전 (경영지원 취합·보고) */
+  safety: {
+    noAccidentDays: [92, 120, 151, 181, 212, 242],       // 무재해 일수(월말 누적)
+    accidents: [0, 0, 0, 0, 0, 0],                       // 산업재해 건수
+    nearMiss: [2, 1, 3, 2, 1, 2]                         // 아차사고 신고 건수
+  },
+
   departments: [
-    { name: "개발", count: 19, cost: 108, note: "백엔드 1명 입사 완료, 1명 추가 채용 중" },
-    { name: "영업", count: 9, cost: 45, note: "" },
-    { name: "경영지원", count: 7, cost: 28, note: "인사 인턴 정규 전환 완료" },
-    { name: "마케팅", count: 6, cost: 27, note: "콘텐츠 마케터 1명 채용 중" },
-    { name: "디자인", count: 5, cost: 26, note: "프로덕트 디자이너 1명 채용 중" }
+    { name: "생산", count: 24, cost: 68, note: "스프링·폼재단·퀼팅·봉제·조립 5개 공정" },
+    { name: "품질관리", count: 5, cost: 15, note: "입고·공정·출하 검사" },
+    { name: "물류·출하", count: 5, cost: 13, note: "압축포장·출하" },
+    { name: "자재·구매", count: 4, cost: 12, note: "원자재 수급·재고 관리" },
+    { name: "영업", count: 4, cost: 12, note: "B2B(호텔·가구점)·B2C" },
+    { name: "경영지원", count: 4, cost: 7, note: "인사·회계·총무" }
   ],
 
   decisions: [
-    { title: "ERP 가동 일정·교육 계획 승인", desc: "8월 말 가동 목표, 부서별 교육 일정 확정", due: "7/31" },
-    { title: "사무실 임대 재계약 최종 결정", desc: "인상률 5% 협상안 수용 여부", due: "8/8" },
-    { title: "하반기 채용 계획 승인", desc: "백엔드 1명 추가·데이터 분석가 신설", due: "8/14" }
+    { title: "ERP 가동 일정·교육 계획 승인", desc: "8월 말 가동 목표, 공정별 교육 일정 확정", due: "7/31" },
+    { title: "공장 임대 재계약 최종 결정", desc: "임대료 인상률 5% 협상안 수용 여부", due: "8/8" },
+    { title: "하반기 생산직 충원 계획 승인", desc: "봉제·조립 2명 추가, 설비보전 1명 신설", due: "8/14" }
   ],
 
   projects: [
-    { name: "ISO 9001 인증 갱신", type: "인증/규제", dept: "경영지원", status: "3. 완료", progress: 100, due: "2026-05-30", note: "5/28 갱신 완료" },
+    { name: "ISO 9001 인증 갱신", type: "인증/규제", dept: "품질관리", status: "3. 완료", progress: 100, due: "2026-05-30", note: "5/28 갱신 완료" },
     { name: "ERP 시스템 도입", type: "프로젝트", dept: "경영지원", status: "2. 진행중", progress: 85, due: "2026-08-31", note: "2차 예산 승인 완료(6/19) — 8월 말 가동 목표" },
-    { name: "A사 연간 공급 계약", type: "계약", dept: "영업", status: "3. 완료", progress: 100, due: "2026-06-30", note: "6/25 계약 체결 완료 — 연 매출 +60 전망" },
-    { name: "사무실 임대 재계약", type: "계약", dept: "경영지원", status: "2. 진행중", progress: 60, due: "2026-08-08", note: "인상률 5%로 재협상 중 — 8월 초 결론 예정" },
-    { name: "법인차량 리스 갱신", type: "계약", dept: "경영지원", status: "4. 보류", progress: 10, due: "2026-09-30", note: "우선순위 낮음, 3분기 재검토" }
+    { name: "A사 호텔체인 연간 공급 계약", type: "계약", dept: "영업", status: "3. 완료", progress: 100, due: "2026-06-30", note: "6/25 계약 체결 완료 — 연 매출 +60 전망" },
+    { name: "공장 임대 재계약", type: "계약", dept: "경영지원", status: "2. 진행중", progress: 60, due: "2026-08-08", note: "인상률 5%로 재협상 중 — 8월 초 결론 예정" },
+    { name: "노후 퀼팅기 교체 검토", type: "설비투자", dept: "생산", status: "4. 보류", progress: 10, due: "2026-09-30", note: "투자 규모 검토 중, 3분기 재논의" }
   ],
 
   recruiting: {
     stages: ["1. 신규 지원자 수신", "2. 서류 합격(면접 대기)", "3. 면접 진행", "4. 오퍼 제안", "5. 최종 합격", "6. 불합격"],
     candidates: [
-      { name: "오세훈", position: "백엔드 개발자", stage: "1. 신규 지원자 수신", applied: "2026-07-16", channel: "채용사이트", rating: "", interview: "", memo: "Java/MSA 6년, 대용량 트래픽 처리 경험" },
-      { name: "이서연", position: "프로덕트 디자이너", stage: "2. 서류 합격(면접 대기)", applied: "2026-06-10", channel: "직접 지원", rating: "", interview: "2026-07-28 10:30", memo: "B2B SaaS 포트폴리오 우수 — 7/28 면접 예정" },
-      { name: "김민준", position: "백엔드 개발자", stage: "3. 면접 진행", applied: "2026-06-08", channel: "채용사이트", rating: "", interview: "2026-07-24 14:00", memo: "Spring/Kotlin 5년 경력 — 7/24 1차 기술면접 예정" },
-      { name: "최수아", position: "콘텐츠 마케터", stage: "4. 오퍼 제안", applied: "2026-06-03", channel: "추천", rating: "A (적극 추천)", interview: "2026-06-18 19:30", memo: "처우 협의 중 — 8/3 입사 목표" },
-      { name: "박지훈", position: "백엔드 개발자", stage: "5. 최종 합격", applied: "2026-05-28", channel: "헤드헌터", rating: "B (추천)", interview: "2026-06-16 23:00", memo: "6/22 입사 완료 (백엔드 개발자)" },
-      { name: "정다은", position: "인사 인턴", stage: "5. 최종 합격", applied: "2026-03-15", channel: "채용사이트", rating: "A (적극 추천)", interview: "", memo: "5/1 입사 완료" },
-      { name: "한도현", position: "백엔드 개발자", stage: "6. 불합격", applied: "2026-05-20", channel: "채용사이트", rating: "D (비추천)", interview: "", memo: "경력 요건 미달" }
+      { name: "오세훈", position: "봉제·조립 생산직", stage: "1. 신규 지원자 수신", applied: "2026-07-16", channel: "채용사이트", rating: "", interview: "", memo: "가구 봉제 6년, 산업용 재봉기 숙련" },
+      { name: "이서연", position: "품질관리 담당", stage: "2. 서류 합격(면접 대기)", applied: "2026-06-10", channel: "직접 지원", rating: "", interview: "2026-07-28 10:30", memo: "침구 QC 4년, ISO 9001 내부심사원 — 7/28 면접 예정" },
+      { name: "김민준", position: "봉제·조립 생산직", stage: "3. 면접 진행", applied: "2026-06-08", channel: "채용사이트", rating: "", interview: "2026-07-24 14:00", memo: "매트리스 조립 5년 — 7/24 실기 평가 예정" },
+      { name: "최수아", position: "설비보전 기사", stage: "4. 오퍼 제안", applied: "2026-06-03", channel: "추천", rating: "A (적극 추천)", interview: "2026-06-18 19:30", memo: "퀼팅기·재봉기 보전 경험 — 8/3 입사 목표" },
+      { name: "박지훈", position: "봉제·조립 생산직", stage: "5. 최종 합격", applied: "2026-05-28", channel: "헤드헌터", rating: "B (추천)", interview: "2026-06-16 23:00", memo: "6/22 입사 완료 (봉제·조립)" },
+      { name: "정다은", position: "경영지원 인턴", stage: "5. 최종 합격", applied: "2026-03-15", channel: "채용사이트", rating: "A (적극 추천)", interview: "", memo: "5/1 입사 완료" },
+      { name: "한도현", position: "봉제·조립 생산직", stage: "6. 불합격", applied: "2026-05-20", channel: "채용사이트", rating: "D (비추천)", interview: "", memo: "경력 요건 미달" }
     ],
     positions: [
-      { name: "백엔드 개발자", dept: "개발", type: "정규직", count: 2, opened: "2026-05-01", target: "2026-08-31", status: "진행중" },
-      { name: "프로덕트 디자이너", dept: "디자인", type: "정규직", count: 1, opened: "2026-05-15", target: "2026-08-15", status: "진행중" },
-      { name: "콘텐츠 마케터", dept: "마케팅", type: "계약직", count: 1, opened: "2026-06-01", target: "2026-08-31", status: "진행중" },
-      { name: "인사 인턴", dept: "경영지원", type: "인턴", count: 1, opened: "2026-03-01", target: "2026-04-30", status: "마감" }
+      { name: "봉제·조립 생산직", dept: "생산", type: "정규직", count: 2, opened: "2026-05-01", target: "2026-08-31", status: "진행중" },
+      { name: "품질관리 담당", dept: "품질관리", type: "정규직", count: 1, opened: "2026-05-15", target: "2026-08-15", status: "진행중" },
+      { name: "설비보전 기사", dept: "생산", type: "계약직", count: 1, opened: "2026-06-01", target: "2026-08-31", status: "진행중" },
+      { name: "경영지원 인턴", dept: "경영지원", type: "인턴", count: 1, opened: "2026-03-01", target: "2026-04-30", status: "마감" }
     ]
   }
 };

@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>💰 월간 재무 요약 대시보드</title>
-<link rel="stylesheet" href="assets/style.css?v=7">
+<link rel="stylesheet" href="assets/style.css?v=8">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=7"></script>
+<script src="assets/data.js?v=8"></script>
 </head>
 <body>
 <div class="wrap">
   <div class="page-head">
     <h1>💰 월간 재무 요약 대시보드</h1>
-    <div class="meta">2026년 6월 기준 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
+    <div class="meta">2026년 6월 기준 · 매트리스 제조공장 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
   </div>
 
   <h2 class="sec"><span class="sec-no">01</span>재무 요약</h2>
@@ -51,7 +51,36 @@
     </table>
   </div>
 
-  <h2 class="sec"><span class="sec-no">04</span>현금흐름 예측 (향후 3개월)</h2>
+  <h2 class="sec"><span class="sec-no">04</span>제조원가</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>제조원가 구성</h3>
+      <div class="sub">재료비 + 노무비 + 제조경비 · 백만 원</div>
+      <div class="chart-box short"><canvas id="chart-mfg"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>대당 제조원가</h3>
+      <div class="sub">제조원가 ÷ 생산량 · 만 원</div>
+      <div class="chart-box short"><canvas id="chart-unit"></canvas></div>
+    </div>
+  </div>
+  <div class="tbl-wrap" style="margin-top:14px">
+    <table>
+      <thead><tr><th>월</th><th class="num">생산량(대)</th><th class="num">재료비</th><th class="num">노무비</th><th class="num">제조경비</th><th class="num">제조원가</th><th class="num">대당 원가</th><th>비고</th></tr></thead>
+      <tbody id="tbl-mfg"></tbody>
+    </table>
+  </div>
+  <p class="note">총비용 = 제조원가 + 판매관리비. 생산량은 원가 산출을 위해 생산팀에서 제공받은 수치입니다.</p>
+
+  <h2 class="sec"><span class="sec-no">05</span>주요 원자재 단가</h2>
+  <div class="card">
+    <h3>원자재 단가 지수</h3>
+    <div class="sub">2026년 1월 = 100 기준 · 우레탄폼 · 포켓스프링 · 원단</div>
+    <div class="chart-box short"><canvas id="chart-material"></canvas></div>
+  </div>
+  <p class="note">폼·원단 단가 상승이 재료비 비중 확대의 주요 원인입니다. 자재·구매팀과 단가 재협상 검토 중.</p>
+
+  <h2 class="sec"><span class="sec-no">06</span>현금흐름 예측 (향후 3개월)</h2>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>월</th><th class="num">예상 유입</th><th class="num">예상 유출</th><th class="num">월말 예상 잔고</th><th>비고</th></tr></thead>
@@ -63,10 +92,10 @@
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=7"></script>
+<script src="assets/app.js?v=8"></script>
 <script>
 renderNav("finance.html");
-const F = DATA.finance, CS = DATA.costStructure;
+const F = DATA.finance, CS = DATA.costStructure, M = DATA.manufacturing, MI = DATA.materialIndex;
 const last = F.revenue.length - 1, prev = last - 1;
 
 document.getElementById("kpis").innerHTML = `
@@ -98,6 +127,30 @@ document.getElementById("tbl-cost").innerHTML = DATA.months.map((m, i) => {
 document.getElementById("tbl-forecast").innerHTML = DATA.cashForecast.map(f => `
   <tr><td>${f.month}</td><td class="num">${f.inflow}</td><td class="num">${f.outflow}</td>
   <td class="num"><strong>${f.balance.toLocaleString()}</strong></td><td class="muted">${f.note}</td></tr>`).join("");
+
+/* 제조원가 구성 (누적 막대) */
+makeBarChart("chart-mfg", DATA.monthLabels, [
+  { label: "재료비", data: M.material, backgroundColor: THEME.rev },
+  { label: "노무비", data: M.labor, backgroundColor: THEME.profit },
+  { label: "제조경비", data: M.overhead, backgroundColor: THEME.aux }
+], { stacked: true, thickness: 34 });
+
+/* 대당 제조원가 */
+makeLineChart("chart-unit", DATA.monthLabels, [lineDS("대당 제조원가", M.unitCost, THEME.cost)], { unit: "만 원" });
+
+/* 원자재 단가 지수 */
+makeLineChart("chart-material", DATA.monthLabels, [
+  lineDS("우레탄폼", MI.foam, THEME.rev),
+  lineDS("포켓스프링", MI.spring, THEME.cost),
+  lineDS("원단", MI.fabric, THEME.profit)
+], { endLabels: true });
+
+/* 제조원가 표 */
+document.getElementById("tbl-mfg").innerHTML = DATA.months.map((m, i) => `
+  <tr><td>${m}</td><td class="num">${M.output[i].toLocaleString()}</td>
+  <td class="num">${M.material[i]}</td><td class="num">${M.labor[i]}</td><td class="num">${M.overhead[i]}</td>
+  <td class="num"><strong>${M.total[i]}</strong></td><td class="num">${M.unitCost[i]}만</td>
+  <td class="muted">${M.notes[i] || "—"}</td></tr>`).join("");
 </script>
 </body>
 </html>

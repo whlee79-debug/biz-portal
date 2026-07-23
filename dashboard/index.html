@@ -4,25 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>📊 경영 현황 종합 대시보드</title>
-<link rel="stylesheet" href="assets/style.css?v=7">
+<link rel="stylesheet" href="assets/style.css?v=8">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=7"></script>
+<script src="assets/data.js?v=8"></script>
 </head>
 <body>
 <div class="wrap">
   <div class="page-head">
     <h1>📊 경영 현황 종합 대시보드</h1>
-    <div class="meta">2026년 7월 경영 현황 보고 (6월 실적 기준) · 작성: 경영지원부 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
+    <div class="meta">2026년 7월 경영 현황 보고 (6월 실적 기준) · 매트리스 제조공장 · 작성: 경영지원부 · 단위: 백만 원</div>
   </div>
 
   <h2 class="sec"><span class="sec-no">01</span>경영 요약</h2>
   <div class="kpis" id="kpis"></div>
-  <blockquote style="margin-top:14px">상반기 최고 실적으로 마감, A사 연간 계약 체결로 하반기 매출 기반 확보. 이번 달 의사결정 필요 안건 3건.</blockquote>
+  <blockquote style="margin-top:14px">상반기 최고 실적으로 마감, A사 호텔체인 연간 계약 체결로 하반기 매출 기반 확보. 생산량 증가로 대당 제조원가 25.7만 → 23.3만 원 개선. 이번 달 의사결정 필요 안건 3건.</blockquote>
 
   <h2 class="sec"><span class="sec-no">02</span>의사결정 요청</h2>
   <div class="decisions" id="decisions"></div>
 
-  <h2 class="sec"><span class="sec-no">03</span>인력·조직 요약</h2>
+  <h2 class="sec"><span class="sec-no">03</span>생산·안전 요약</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>구분</th><th>6월</th><th>비고</th></tr></thead>
+      <tbody id="tbl-plant-summary"></tbody>
+    </table>
+  </div>
+  <p class="note">제조원가 상세는 <a href="finance.html">월간 재무 요약 대시보드</a> 참조 · 생산량·불량률 등 생산 지표는 생산팀 소관</p>
+
+  <h2 class="sec"><span class="sec-no">04</span>인력·조직 요약</h2>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>구분</th><th>6월</th><th>비고</th></tr></thead>
@@ -31,16 +40,16 @@
   </div>
   <p class="note">상세는 <a href="people.html">인력·조직 대시보드</a> 참조</p>
 
-  <h2 class="sec"><span class="sec-no">04</span>상세 데이터</h2>
+  <h2 class="sec"><span class="sec-no">05</span>상세 데이터</h2>
   <div class="links">
     <a class="link-card" href="finance.html">
       <div class="t">월간 재무 요약 대시보드</div>
-      <div class="d">매출·비용 추이, 고정비/변동비, 현금흐름 예측</div>
+      <div class="d">매출·비용 추이, 제조원가·대당 원가, 원자재 단가, 현금흐름 예측</div>
       <span class="arrow">자세히 보기 →</span>
     </a>
     <a class="link-card" href="people.html">
       <div class="t">인력·조직 대시보드</div>
-      <div class="d">부서별 인원, 인건비 추이, 퇴사율, 채용 파이프라인</div>
+      <div class="d">부서별 인원, 인건비 추이, 교대·근태, 퇴사율</div>
       <span class="arrow">자세히 보기 →</span>
     </a>
     <a class="link-card" href="recruiting.html">
@@ -50,14 +59,14 @@
     </a>
   </div>
 
-  <h2 class="sec"><span class="sec-no">05</span>핵심 지표 추이</h2>
+  <h2 class="sec"><span class="sec-no">06</span>핵심 지표 추이</h2>
   <div class="card">
     <h3>매출 · 비용 · 영업이익</h3>
     <div class="sub">2026년 1월 ~ 6월 · 백만 원</div>
     <div class="chart-box"><canvas id="chart-core"></canvas></div>
   </div>
 
-  <h2 class="sec"><span class="sec-no">06</span>월별 재무 현황</h2>
+  <h2 class="sec"><span class="sec-no">07</span>월별 재무 현황</h2>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>월</th><th class="num">매출</th><th class="num">비용</th><th class="num">영업이익</th><th class="num">영업이익률</th><th class="num">현금 잔고</th><th>비고</th></tr></thead>
@@ -65,7 +74,7 @@
     </table>
   </div>
 
-  <h2 class="sec"><span class="sec-no">07</span>주요 프로젝트·계약</h2>
+  <h2 class="sec"><span class="sec-no">08</span>주요 프로젝트·계약</h2>
   <div class="tbl-wrap">
     <table>
       <thead><tr><th>항목</th><th>구분</th><th>담당 부서</th><th>상태</th><th>진행률</th><th>마감일</th><th>리스크/비고</th></tr></thead>
@@ -76,10 +85,10 @@
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=7"></script>
+<script src="assets/app.js?v=8"></script>
 <script>
 renderNav("index.html");
-const F = DATA.finance, P = DATA.people;
+const F = DATA.finance, P = DATA.people, M = DATA.manufacturing, S = DATA.safety;
 const last = F.revenue.length - 1, prev = last - 1;
 
 /* KPI 타일 */
@@ -94,7 +103,9 @@ document.getElementById("kpis").innerHTML = `
   <div class="kpi"><div class="label">매출</div><div class="value">${F.revenue[last]} <small>백만 원</small></div>${delta(F.revenue[last], F.revenue[prev], "", true)}</div>
   <div class="kpi"><div class="label">영업이익</div><div class="value">${F.profit[last]} <small>백만 원 · 이익률 ${F.marginPct[last]}%</small></div>${delta(F.profit[last], F.profit[prev], "")}</div>
   <div class="kpi"><div class="label">현금 잔고</div><div class="value">${F.cash[last].toLocaleString()} <small>백만 원</small></div>${delta(F.cash[last], F.cash[prev], "")}</div>
-  <div class="kpi"><div class="label">총원</div><div class="value">${P.headcount[last]} <small>명</small></div>${delta(P.headcount[last], P.headcount[prev], "명")}</div>`;
+  <div class="kpi"><div class="label">총원</div><div class="value">${P.headcount[last]} <small>명</small></div>${delta(P.headcount[last], P.headcount[prev], "명")}</div>
+  <div class="kpi"><div class="label">대당 제조원가</div><div class="value">${M.unitCost[last]} <small>만 원 · ${M.output[last].toLocaleString()}대 생산</small></div>${delta(M.unitCost[last], M.unitCost[prev], "만 원")}</div>
+  <div class="kpi"><div class="label">무재해 일수</div><div class="value">${S.noAccidentDays[last]} <small>일</small></div><div class="delta up">재해 ${S.accidents.reduce((a, b) => a + b, 0)}건 <span class="vs">상반기 누계</span></div></div>`;
 
 /* 의사결정 */
 document.getElementById("decisions").innerHTML = DATA.decisions.map((d, i) => `
@@ -125,6 +136,16 @@ document.getElementById("tbl-projects").innerHTML = DATA.projects.map(p => `
   <td><span class="pill ${stPill(p.status)}">${p.status.slice(3)}</span></td>
   <td><div class="prog"><div class="bar"><i style="width:${p.progress}%"></i></div><span>${p.progress}%</span></div></td>
   <td>${p.due}</td><td class="muted">${p.note}</td></tr>`).join("");
+
+/* 생산·안전 요약 (경영지원 취합) */
+const matRatio = (M.material[last] / M.total[last] * 100).toFixed(1);
+const unitImprove = ((M.unitCost[0] - M.unitCost[last]) / M.unitCost[0] * 100).toFixed(1);
+document.getElementById("tbl-plant-summary").innerHTML = `
+  <tr><td><strong>생산량</strong></td><td>${M.output[last].toLocaleString()}대</td><td class="muted">전월 대비 +${(M.output[last] - M.output[prev]).toLocaleString()}대 (상반기 최대)</td></tr>
+  <tr><td><strong>제조원가</strong></td><td>${M.total[last]}</td><td class="muted">재료비 ${M.material[last]} · 노무비 ${M.labor[last]} · 제조경비 ${M.overhead[last]} (판관비 ${M.sga[last]} 별도)</td></tr>
+  <tr><td><strong>대당 제조원가</strong></td><td>${M.unitCost[last]}만 원</td><td class="muted">1월 ${M.unitCost[0]}만 원 대비 ${unitImprove}% 개선 — 규모 효과</td></tr>
+  <tr><td><strong>재료비 비중</strong></td><td>${matRatio}%</td><td class="muted">원자재 단가 지수 상승(폼 +8.8%) 영향 지속</td></tr>
+  <tr><td><strong>무재해 일수</strong></td><td>${S.noAccidentDays[last]}일</td><td class="muted">산업재해 ${S.accidents.reduce((a, b) => a + b, 0)}건 · 아차사고 신고 ${S.nearMiss.reduce((a, b) => a + b, 0)}건(예방활동)</td></tr>`;
 
 /* 인력·조직 요약 */
 const activeRecruits = DATA.recruiting.candidates.filter(c => /^[1-4]\./.test(c.stage)).length;
