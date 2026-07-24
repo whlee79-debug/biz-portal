@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>인건비 시뮬레이터 · Biz Portal</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/favicon-32.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=9">
+<style>
+/* ===== Biz Portal 디자인 시스템 토큰 매핑 =====
+   기존 대시보드(그린 SaaS)와 동일한 색/폰트를 쓰도록 변수 값만 교체.
+   증가(oxide=레드) / 절감(green) 의미 구분은 유지. */
+:root{
+  --paper:#f4f5f7; --card:#ffffff; --ink:#111827; --ink-2:#6b7280;
+  --rule:#e8eaed; --rule-2:#eef0f2;
+  --oxide:#dc2626;   /* 비용 증가 */
+  --green:#16a34a;   /* 절감 */
+  --brass:#16a34a;   /* 강조(포커스·활성) */
+  --bar-1:#2a78d6;   /* 구성비 막대 1 */
+  --bar-2:#eda100;   /* 구성비 막대 2 */
+  --sans:"Inter","Pretendard",system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+[data-theme="dark"]{
+  --paper:#0f1115; --card:#171a1f; --ink:#f3f4f6; --ink-2:#9ca3af;
+  --rule:#242830; --rule-2:#242830;
+  --oxide:#f87171; --green:#22c55e; --brass:#22c55e;
+  --bar-1:#3987e5; --bar-2:#c98500;
+}
+body{font-size:15px;line-height:1.65}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+
+/* header — 대시보드 page-head 리듬에 맞춤 */
+header{padding:0 0 22px;border-bottom:1px solid var(--rule);margin-bottom:8px}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-strong);
+  font-weight:700;margin-bottom:10px}
+[data-theme="dark"] .eyebrow{color:var(--accent)}
+h1{font-size:clamp(22px,3vw,30px);line-height:1.25;font-weight:700;letter-spacing:-.025em;max-width:18em}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{margin-top:12px;max-width:46em;color:var(--ink-2);font-size:14px;line-height:1.7}
+.lede b{color:var(--ink);font-weight:600}
+
+h2{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);
+  padding-bottom:9px;border-bottom:1px solid var(--rule);margin-bottom:14px}
+.hint{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.6}
+
+/* 입력 테이블 — 대시보드 전역 table 규칙을 덮어씀 */
+table{width:100%;border-collapse:collapse;min-width:0}
+th{font-size:11px;font-weight:600;letter-spacing:.03em;color:var(--ink-2);text-align:right;
+  padding:0 6px 8px;border-bottom:1px solid var(--rule);white-space:nowrap;background:transparent}
+th:first-child{text-align:left}
+td{padding:6px 3px;border-bottom:1px solid var(--rule-2);vertical-align:middle}
+input,select{font-family:inherit;font-size:14px;color:var(--ink);background:var(--card);
+  border:1px solid var(--rule);border-radius:8px;padding:7px 10px;width:100%;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+input.n{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+td.act{width:30px;padding-right:0}
+.x{background:none;border:0;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;
+  padding:4px 6px;border-radius:6px}
+.x:hover{background:var(--chip-bg);color:var(--bad)}
+.addrow{margin-top:12px;background:none;border:1px dashed var(--rule);color:var(--ink-2);
+  font-family:inherit;font-size:13px;padding:9px 14px;border-radius:10px;cursor:pointer;width:100%}
+.addrow:hover{border-color:var(--accent);color:var(--accent-strong);background:var(--accent-soft)}
+[data-theme="dark"] .addrow:hover{color:var(--accent)}
+
+/* 결과 패널 — 대시보드 카드 스타일(라이트/다크 모두 대비 확보) */
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:14px;
+  box-shadow:var(--shadow);padding:22px 20px;position:sticky;top:24px}
+.panel h2{color:var(--ink-2);border-color:var(--rule)}
+
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);font-size:12px;
+  color:var(--muted);line-height:1.75}
+footer b{color:var(--ink-2)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== 인건비 시뮬레이터 ===== */
+.grid{display:grid;grid-template-columns:1fr 380px;gap:28px;margin-top:26px;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr;gap:24px}.panel{position:static}}
+
+details{margin-top:24px;border-top:1px solid var(--rule);padding-top:14px}
+summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-2);list-style:none;
+  display:flex;justify-content:space-between;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"설정 펼치기";font-size:11.5px;font-weight:600;color:var(--accent-strong)}
+[data-theme="dark"] summary::after{color:var(--accent)}
+details[open] summary::after{content:"접기"}
+.rates{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:16px}
+.rates label{display:block;font-size:11.5px;color:var(--ink-2);margin-bottom:5px;font-weight:500}
+
+.total-label{font-size:12px;color:var(--ink-2);letter-spacing:.02em}
+.total{font-family:var(--mono);font-size:38px;font-weight:700;letter-spacing:-.035em;
+  line-height:1.1;margin:4px 0 2px;color:var(--ink)}
+.total small{font-size:16px;font-weight:500;margin-left:3px;color:var(--ink-2)}
+.per{font-size:12.5px;color:var(--muted)}
+
+/* 연봉 대비 실부담 구성 막대 */
+.gap{margin:22px 0 4px}
+.gapbar{display:flex;height:34px;border-radius:8px;overflow:hidden;background:var(--rule-2)}
+.gap-s{background:var(--bar-1);transition:width .45s cubic-bezier(.4,0,.2,1)}
+.gap-b{background:var(--bar-2);transition:width .45s cubic-bezier(.4,0,.2,1)}
+.gaplab{display:flex;justify-content:space-between;margin-top:9px;font-size:11.5px;color:var(--ink-2)}
+.gaplab b{display:block;color:var(--ink);font-family:var(--mono);font-size:13.5px;font-weight:600;margin-top:2px}
+.mult{margin-top:16px;padding:12px 14px;background:var(--accent-soft);border-left:3px solid var(--accent);
+  border-radius:0 8px 8px 0;font-size:12.5px;color:var(--ink-2);line-height:1.55}
+.mult b{color:var(--accent-strong);font-family:var(--mono);font-size:15px;font-weight:700}
+[data-theme="dark"] .mult b{color:var(--accent)}
+
+.brk{margin-top:20px;border-top:1px solid var(--rule);padding-top:13px}
+.brk div{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:var(--ink-2)}
+.brk div span:last-child{font-family:var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.brk div.sum{border-top:1px solid var(--rule);margin-top:8px;padding-top:11px;font-weight:700;color:var(--ink)}
+
+/* 시나리오 카드 */
+.scen{margin-top:48px}
+.scen-head{display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1px solid var(--rule);padding-bottom:10px;margin-bottom:18px;gap:16px;flex-wrap:wrap}
+.scen-head h2{border:0;padding:0;margin:0}
+.scen-head p{font-size:12.5px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.c{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+.c h3{font-size:14.5px;font-weight:700;margin-bottom:3px;letter-spacing:-.01em}
+.c .d{font-size:12px;color:var(--ink-2);line-height:1.55;margin-bottom:14px;min-height:2.9em}
+.ctrl{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.ctrl label{font-size:12px;color:var(--ink-2);flex:1}
+.ctrl input,.ctrl select{width:92px;padding:6px 8px;font-size:13px;flex:none}
+.out{margin-top:14px;border-top:1px solid var(--rule-2);padding-top:12px}
+.out div{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;color:var(--ink-2)}
+.out div span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink)}
+.out .hl{font-size:14px;font-weight:700;color:var(--ink);padding-top:8px}
+.out .hl span:last-child{font-size:16px;font-weight:700}
+.save span:last-child{color:var(--green)!important}
+.cost span:last-child{color:var(--oxide)!important}
+.note{font-size:11.5px;color:var(--muted);margin-top:11px;padding-top:10px;
+  border-top:1px dashed var(--rule);line-height:1.55}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">인건비 시뮬레이터</div>
+  <h1>연봉 총액으로 잡은 예산은<br><em>매년 모자랍니다.</em></h1>
+  <p class="lede">사업주는 연봉 외에 <b>4대보험과 퇴직급여</b>를 함께 부담합니다. 인원 계획을 세울 때 이 부분을 빼고 계산하면 예산은 반드시 어긋납니다.
+  고객사 계약이 바뀔 때마다 엑셀로 다시 계산하던 작업을 도구로 만들었습니다. 직군별 인원과 연봉을 넣으면 <b>실제 총부담</b>이 나오고, 채용·감축·근로시간 단축·도급 전환을 같은 기준으로 비교할 수 있습니다.</p>
+</header>
+
+<div class="grid">
+  <section>
+    <h2>직군별 인력 구성</h2>
+    <table>
+      <thead><tr><th>직군</th><th style="width:88px">인원</th><th style="width:118px">평균 연봉(만원)</th><th></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <button class="addrow" id="add">직군 추가</button>
+    <p class="hint">평균 연봉은 계약 연봉(세전) 기준입니다. 상여·수당이 별도라면 연 환산해 포함하세요.</p>
+
+    <details>
+      <summary>사업주 부담 요율 및 가정</summary>
+      <div class="rates">
+        <div><label>국민연금 (%)</label><input class="n r" id="r_pen" value="4.5"></div>
+        <div><label>연금 기준소득 월 상한(만원)</label><input class="n r" id="r_cap" value="637"></div>
+        <div><label>건강보험 (%)</label><input class="n r" id="r_hea" value="3.545"></div>
+        <div><label>장기요양 (건강보험료 대비 %)</label><input class="n r" id="r_ltc" value="12.95"></div>
+        <div><label>고용보험 (%)</label><input class="n r" id="r_emp" value="1.15"></div>
+        <div><label>산재보험 (%)</label><input class="n r" id="r_acc" value="0.7"></div>
+        <div><label>퇴직급여 충당 (%)</label><input class="n r" id="r_sev" value="8.33"></div>
+        <div><label>평균 근속(년)</label><input class="n r" id="r_ten" value="4"></div>
+      </div>
+      <p class="hint">기본값은 최근 공시 요율을 참고한 예시입니다. 요율은 매년 바뀌고 산재보험은 업종별로 다르므로, 적용 연도 기준으로 직접 수정해 사용하세요. 국민연금과 건강보험에는 기준소득 상한이 있어 고연봉 구간에서는 부담률이 낮아집니다.</p>
+    </details>
+  </section>
+
+  <aside class="panel">
+    <h2>연간 총부담</h2>
+    <div class="total-label">인건비 총액 (연)</div>
+    <div class="total num" id="t_total">—</div>
+    <div class="per" id="t_per">—</div>
+
+    <div class="gap">
+      <div class="gapbar">
+        <div class="gap-s" id="g_sal" style="width:82%"></div>
+        <div class="gap-b" id="g_bur" style="width:18%"></div>
+      </div>
+      <div class="gaplab">
+        <div>연봉 총액<b class="num" id="g_lsal">—</b></div>
+        <div style="text-align:right">법정 부담·충당<b class="num" id="g_lbur">—</b></div>
+      </div>
+    </div>
+
+    <div class="mult">연봉 1원당 실제로 나가는 돈 <b id="t_mult">—</b><br>
+      <span id="t_mult2">—</span></div>
+
+    <div class="brk" id="brk"></div>
+  </aside>
+</div>
+
+<section class="scen">
+  <div class="scen-head">
+    <h2>시나리오 비교</h2>
+    <p>모든 시나리오는 위 구성과 요율을 기준으로 계산됩니다. 절감액은 연간 기준입니다.</p>
+  </div>
+  <div class="cards">
+
+    <div class="c">
+      <h3>신규 채용</h3>
+      <p class="d">인원을 늘렸을 때 예산이 얼마나 더 필요한지 봅니다. 연봉이 아니라 총부담으로 잡아야 합니다.</p>
+      <div class="ctrl"><label>직군</label><select id="h_grp"></select></div>
+      <div class="ctrl"><label>인원(명)</label><input class="n s" id="h_cnt" value="3"></div>
+      <div class="ctrl"><label>제시 연봉(만원)</label><input class="n s" id="h_sal" value="5000"></div>
+      <div class="out">
+        <div><span>연봉 증가분</span><span id="h_a">—</span></div>
+        <div class="hl cost"><span>실제 추가 부담(연)</span><span id="h_b">—</span></div>
+      </div>
+      <p class="note">채용 승인을 받을 때 연봉만 올리면, 실행 단계에서 차액만큼 예산이 비게 됩니다.</p>
+    </div>
+
+    <div class="c">
+      <h3>인원 감축</h3>
+      <p class="d">퇴직금과 위로금은 감축 시점에 한 번에 나갑니다. 첫해 효과는 생각보다 작습니다.</p>
+      <div class="ctrl"><label>직군</label><select id="c_grp"></select></div>
+      <div class="ctrl"><label>인원(명)</label><input class="n s" id="c_cnt" value="10"></div>
+      <div class="ctrl"><label>위로금(개월분)</label><input class="n s" id="c_sol" value="3"></div>
+      <div class="out">
+        <div class="save"><span>연간 절감</span><span id="c_a">—</span></div>
+        <div class="cost"><span>일시 지출(퇴직금+위로금)</span><span id="c_b">—</span></div>
+        <div class="hl"><span>첫해 순효과</span><span id="c_c">—</span></div>
+        <div><span>일시 지출 회수</span><span id="c_d">—</span></div>
+      </div>
+      <p class="note">경영진에게 보고할 때는 연간 절감액이 아니라 첫해 순효과와 회수 시점을 같이 제시해야 판단이 가능합니다.</p>
+    </div>
+
+    <div class="c">
+      <h3>근로시간 단축</h3>
+      <p class="d">고용을 유지하면서 인건비를 줄이는 방법입니다. 보수가 줄면 보험료도 함께 줄어듭니다.</p>
+      <div class="ctrl"><label>적용 직군</label><select id="s_grp"></select></div>
+      <div class="ctrl"><label>단축률(%)</label><input class="n s" id="s_pct" value="20"></div>
+      <div class="ctrl"><label>적용 기간(개월)</label><input class="n s" id="s_mon" value="6"></div>
+      <div class="out">
+        <div><span>월 절감</span><span id="s_a">—</span></div>
+        <div class="hl save"><span>기간 총 절감</span><span id="s_b">—</span></div>
+      </div>
+      <p class="note">근로시간 단축은 근로조건 변경이라 개별 동의가 필요하고, 단축 후 임금이 최저임금 아래로 내려가지 않는지 확인해야 합니다.</p>
+    </div>
+
+    <div class="c">
+      <h3>무급휴직</h3>
+      <p class="d">급여는 멈추지만 건강보험은 계속 부과됩니다. 이 차이를 반영해 계산합니다.</p>
+      <div class="ctrl"><label>직군</label><select id="u_grp"></select></div>
+      <div class="ctrl"><label>인원(명)</label><input class="n s" id="u_cnt" value="15"></div>
+      <div class="ctrl"><label>기간(개월)</label><input class="n s" id="u_mon" value="3"></div>
+      <div class="out">
+        <div><span>급여 미지급분</span><span id="u_a">—</span></div>
+        <div class="cost"><span>휴직 중 유지 부담</span><span id="u_b">—</span></div>
+        <div class="hl save"><span>실질 절감</span><span id="u_c">—</span></div>
+      </div>
+      <p class="note">국민연금은 납부예외 신청이 가능하고 건강보험은 휴직 사유에 따라 경감 후 복직 시 정산합니다. 고용유지지원금 요건도 함께 검토할 대상입니다.</p>
+    </div>
+
+    <div class="c">
+      <h3>도급 전환</h3>
+      <p class="d">고정비를 변동비로 바꿉니다. 4대보험과 퇴직급여 부담이 도급비로 대체됩니다.</p>
+      <div class="ctrl"><label>직군</label><select id="o_grp"></select></div>
+      <div class="ctrl"><label>전환 인원(명)</label><input class="n s" id="o_cnt" value="30"></div>
+      <div class="ctrl"><label>도급 단가(월/인, 만원)</label><input class="n s" id="o_fee" value="330"></div>
+      <div class="out">
+        <div><span>기존 총부담(연)</span><span id="o_a">—</span></div>
+        <div><span>도급비(연)</span><span id="o_b">—</span></div>
+        <div class="hl" id="o_wrap"><span>연간 차액</span><span id="o_c">—</span></div>
+      </div>
+      <p class="note">단가만 비교하면 판단을 그르칩니다. 지휘·명령 관계가 남으면 위장도급으로 보아 직접 고용 의무가 생길 수 있어, 계약 구조와 현장 운영을 함께 설계해야 합니다.</p>
+    </div>
+
+    <div class="c">
+      <h3>일괄 임금 인상</h3>
+      <p class="d">인상률 협의 전에 회사가 실제로 부담하게 될 금액을 확인합니다.</p>
+      <div class="ctrl"><label>인상률(%)</label><input class="n s" id="w_pct" value="4"></div>
+      <div class="out">
+        <div><span>연봉 증가분</span><span id="w_a">—</span></div>
+        <div class="hl cost"><span>실제 추가 부담(연)</span><span id="w_b">—</span></div>
+        <div><span>1인당 월 추가</span><span id="w_c">—</span></div>
+      </div>
+      <p class="note">임금 인상은 퇴직급여 충당금과 보험료를 동시에 끌어올립니다. 인상률 1%의 실제 무게는 언제나 1%보다 큽니다.</p>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <b>인건비 시뮬레이터</b> · 인사·경영지원 실무용으로 직접 기획하고 만든 도구입니다. 입력값은 예시이며 브라우저 안에서만 계산되고 어디에도 저장되지 않습니다.<br>
+  요율 기본값은 참고용 예시입니다. 국민연금·건강보험 요율과 기준소득 상한, 산재보험 업종별 요율은 매년 변경되므로 적용 연도 기준으로 확인해 사용하시기 바랍니다.
+</footer>
+
+</div>
+
+<script src="assets/app.js?v=9"></script>
+<script>
+renderNav("simulator.html");
+const $=id=>document.getElementById(id);
+let groups=[
+  {name:"사무직",count:15,sal:4200},
+  {name:"기술·연구직",count:10,sal:5500},
+  {name:"현장직",count:45,sal:3300}
+];
+
+function fmt(v){ // v: 만원
+  if(!isFinite(v))return "—";
+  const s=v<0?"−":"";v=Math.abs(v);
+  if(v>=10000)return s+(v/10000).toFixed(2)+"억";
+  return s+Math.round(v).toLocaleString()+"만";
+}
+const num=id=>parseFloat($(id).value)||0;
+
+function rates(){
+  return {pen:num("r_pen")/100,cap:num("r_cap"),hea:num("r_hea")/100,
+    ltc:num("r_ltc")/100,emp:num("r_emp")/100,acc:num("r_acc")/100,
+    sev:num("r_sev")/100,ten:num("r_ten")};
+}
+
+// 1인 기준 연간 계산 (만원)
+function unit(sal,R){
+  const monthly=sal/12;
+  const penBase=Math.min(monthly,R.cap);
+  const pension=penBase*R.pen*12;
+  const health=sal*R.hea;
+  const ltc=health*R.ltc;
+  const emp=sal*R.emp;
+  const acc=sal*R.acc;
+  const sev=sal*R.sev;
+  const burden=pension+health+ltc+emp+acc+sev;
+  return {sal,pension,health,ltc,emp,acc,sev,burden,total:sal+burden};
+}
+function agg(gs,R){
+  const t={sal:0,pension:0,health:0,ltc:0,emp:0,acc:0,sev:0,burden:0,total:0,head:0};
+  gs.forEach(g=>{const u=unit(g.sal,R);
+    ["sal","pension","health","ltc","emp","acc","sev","burden","total"].forEach(k=>t[k]+=u[k]*g.count);
+    t.head+=g.count;});
+  return t;
+}
+
+function drawRows(){
+  $("rows").innerHTML=groups.map((g,i)=>`<tr>
+    <td><input value="${g.name}" data-i="${i}" data-f="name"></td>
+    <td><input class="n" value="${g.count}" data-i="${i}" data-f="count"></td>
+    <td><input class="n" value="${g.sal}" data-i="${i}" data-f="sal"></td>
+    <td class="act">${groups.length>1?`<button class="x" data-del="${i}" aria-label="삭제">×</button>`:""}</td></tr>`).join("");
+  $("rows").querySelectorAll("input").forEach(el=>el.addEventListener("input",e=>{
+    const i=+e.target.dataset.i,f=e.target.dataset.f;
+    groups[i][f]= f==="name"?e.target.value:(parseFloat(e.target.value)||0);
+    if(f!=="name")syncSelects(); calc();
+  }));
+  $("rows").querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",e=>{
+    groups.splice(+e.target.dataset.del,1);drawRows();syncSelects();calc();}));
+}
+function syncSelects(){
+  ["h_grp","c_grp","s_grp","u_grp","o_grp"].forEach(id=>{
+    const el=$(id),prev=el.value;
+    el.innerHTML=groups.map((g,i)=>`<option value="${i}">${g.name||"직군"+(i+1)}</option>`).join("")
+      +(id==="s_grp"?`<option value="all">전 직군</option>`:"");
+    el.value=(prev&&(prev==="all"||+prev<groups.length))?prev:(id==="s_grp"?"all":"0");
+  });
+}
+
+function calc(){
+  const R=rates(),T=agg(groups,R);
+
+  $("t_total").innerHTML=fmt(T.total)+"<small>원</small>";
+  $("t_per").textContent=`${T.head}명 · 1인 평균 ${fmt(T.head?T.total/T.head:0)}원`;
+
+  const ps=T.total?T.sal/T.total*100:82;
+  $("g_sal").style.width=ps+"%"; $("g_bur").style.width=(100-ps)+"%";
+  $("g_lsal").textContent=fmt(T.sal)+"원";
+  $("g_lbur").textContent=fmt(T.burden)+"원";
+  const m=T.sal?T.total/T.sal:1;
+  $("t_mult").textContent=m.toFixed(3)+"원";
+  $("t_mult2").textContent=`연봉 대비 ${((m-1)*100).toFixed(1)}%가 법정 부담과 퇴직급여로 추가됩니다.`;
+
+  $("brk").innerHTML=[["연봉 총액",T.sal],["국민연금",T.pension],["건강보험",T.health],
+    ["장기요양",T.ltc],["고용보험",T.emp],["산재보험",T.acc],["퇴직급여 충당",T.sev]]
+    .map(([k,v])=>`<div><span>${k}</span><span>${fmt(v)}원</span></div>`).join("")
+    +`<div class="sum"><span>합계</span><span>${fmt(T.total)}원</span></div>`;
+
+  // 채용
+  const hu=unit(num("h_sal"),R),hc=num("h_cnt");
+  $("h_a").textContent=fmt(hu.sal*hc)+"원";
+  $("h_b").textContent=fmt(hu.total*hc)+"원";
+
+  // 감축
+  const cg=groups[+$("c_grp").value]||groups[0];
+  if(cg){
+    const cu=unit(cg.sal,R),cc=Math.min(num("c_cnt"),cg.count);
+    const save=cu.total*cc;
+    const monthly=cg.sal/12;
+    const lump=(monthly*R.ten + monthly*num("c_sol"))*cc;
+    $("c_a").textContent=fmt(save)+"원";
+    $("c_b").textContent=fmt(lump)+"원";
+    $("c_c").textContent=fmt(save-lump)+"원";
+    $("c_d").textContent= save>0 ? (lump/save*12).toFixed(1)+"개월" : "—";
+  }
+
+  // 근로시간 단축
+  const sv=$("s_grp").value;
+  const sTgt= sv==="all"?T:agg([groups[+sv]].filter(Boolean),R);
+  const sMonthly=sTgt.total/12*(num("s_pct")/100);
+  $("s_a").textContent=fmt(sMonthly)+"원";
+  $("s_b").textContent=fmt(sMonthly*num("s_mon"))+"원";
+
+  // 무급휴직
+  const ug=groups[+$("u_grp").value]||groups[0];
+  if(ug){
+    const uu=unit(ug.sal,R),uc=Math.min(num("u_cnt"),ug.count),um=num("u_mon");
+    const pay=(uu.sal/12)*um*uc;
+    const keep=((uu.health+uu.ltc)/12)*um*uc;      // 건강보험·장기요양 유지
+    const drop=((uu.pension+uu.emp+uu.acc+uu.sev)/12)*um*uc;
+    $("u_a").textContent=fmt(pay)+"원";
+    $("u_b").textContent=fmt(keep)+"원";
+    $("u_c").textContent=fmt(pay+drop)+"원";
+  }
+
+  // 도급 전환
+  const og=groups[+$("o_grp").value]||groups[0];
+  if(og){
+    const ou=unit(og.sal,R),oc=Math.min(num("o_cnt"),og.count);
+    const cur=ou.total*oc, fee=num("o_fee")*12*oc, diff=cur-fee;
+    $("o_a").textContent=fmt(cur)+"원";
+    $("o_b").textContent=fmt(fee)+"원";
+    $("o_c").textContent=fmt(diff)+"원";
+    $("o_wrap").className="hl "+(diff>=0?"save":"cost");
+  }
+
+  // 임금 인상
+  const wp=num("w_pct")/100;
+  const up=agg(groups.map(g=>({...g,sal:g.sal*(1+wp)})),R);
+  $("w_a").textContent=fmt(up.sal-T.sal)+"원";
+  $("w_b").textContent=fmt(up.total-T.total)+"원";
+  $("w_c").textContent=T.head?fmt((up.total-T.total)/T.head/12)+"원":"—";
+}
+
+$("add").addEventListener("click",()=>{groups.push({name:"신규 직군",count:5,sal:4000});
+  drawRows();syncSelects();calc();});
+document.querySelectorAll(".r,.s").forEach(el=>el.addEventListener("input",calc));
+document.querySelectorAll("select").forEach(el=>el.addEventListener("change",calc));
+drawRows();syncSelects();calc();
+</script>
+</body>
+</html>

@@ -130,14 +130,23 @@ function renderNav(active) {
     coin: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>',
     people: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 5.5a3.2 3.2 0 0 1 0 6"/><path d="M17 14.5a5.5 5.5 0 0 1 3.5 5.5"/></svg>',
     target: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.6" fill="currentColor" stroke="none"/></svg>',
-    chat: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a2 2 0 0 1-2 2H8l-4 4V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg>'
+    chat: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a2 2 0 0 1-2 2H8l-4 4V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg>',
+    calc: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="3" width="15" height="18" rx="2.5"/><path d="M8 7.5h8"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16.5h.01M12 16.5h.01M15.5 16.5h.01"/></svg>',
+    funnel: '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 4.5h17l-6.5 8v7l-4 2v-9z"/></svg>'
   };
-  const tabs = [
-    ["index.html", "종합 현황", I.chart],
-    ["finance.html", "재무", I.coin],
-    ["people.html", "인력·조직", I.people],
-    ["recruiting.html", "채용", I.target],
-    ["/chatbot/", "HR 챗봇", I.chat]
+  // 현황 조회 페이지와 시뮬레이션 도구를 그룹으로 구분한다.
+  const groups = [
+    ["현황", [
+      ["index.html", "종합 현황", I.chart],
+      ["finance.html", "재무", I.coin],
+      ["people.html", "인력·조직", I.people],
+      ["recruiting.html", "채용", I.target]
+    ]],
+    ["도구", [
+      ["simulator.html", "인건비 시뮬레이터", I.calc],
+      ["pipeline.html", "채용 파이프라인", I.funnel],
+      ["/chatbot/", "HR 챗봇", I.chat]
+    ]]
   ];
   const el = document.createElement("aside");
   el.className = "sidebar";
@@ -147,8 +156,11 @@ function renderNav(active) {
       <span><b>Biz Portal</b><small>Executive Dashboard</small></span>
     </a>
     <nav class="side-nav">
-      ${tabs.map(([href, label, icon]) =>
-        `<a class="${active === href ? "active" : ""}" href="${href}">${icon}<span>${label}</span></a>`).join("")}
+      ${groups.map(([g, items]) =>
+        `<div class="side-group">${g}</div>` +
+        items.map(([href, label, icon]) =>
+          `<a class="${active === href ? "active" : ""}" href="${href}">${icon}<span>${label}</span></a>`).join("")
+      ).join("")}
     </nav>
     <div class="side-foot">
       <a href="/">${I.home}<span class="ftxt">포털 홈</span></a>

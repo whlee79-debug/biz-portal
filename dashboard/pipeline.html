@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>채용 파이프라인 · Biz Portal</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/favicon-32.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=9">
+<style>
+/* ===== Biz Portal 디자인 시스템 토큰 매핑 =====
+   기존 대시보드(그린 SaaS)와 동일한 색/폰트를 쓰도록 변수 값만 교체.
+   증가(oxide=레드) / 절감(green) 의미 구분은 유지. */
+:root{
+  --paper:#f4f5f7; --card:#ffffff; --ink:#111827; --ink-2:#6b7280;
+  --rule:#e8eaed; --rule-2:#eef0f2;
+  --oxide:#dc2626;   /* 비용 증가 */
+  --green:#16a34a;   /* 절감 */
+  --brass:#16a34a;   /* 강조(포커스·활성) */
+  --bar-1:#2a78d6;   /* 구성비 막대 1 */
+  --bar-2:#eda100;   /* 구성비 막대 2 */
+  --sans:"Inter","Pretendard",system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+[data-theme="dark"]{
+  --paper:#0f1115; --card:#171a1f; --ink:#f3f4f6; --ink-2:#9ca3af;
+  --rule:#242830; --rule-2:#242830;
+  --oxide:#f87171; --green:#22c55e; --brass:#22c55e;
+  --bar-1:#3987e5; --bar-2:#c98500;
+}
+body{font-size:15px;line-height:1.65}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+
+/* header — 대시보드 page-head 리듬에 맞춤 */
+header{padding:0 0 22px;border-bottom:1px solid var(--rule);margin-bottom:8px}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-strong);
+  font-weight:700;margin-bottom:10px}
+[data-theme="dark"] .eyebrow{color:var(--accent)}
+h1{font-size:clamp(22px,3vw,30px);line-height:1.25;font-weight:700;letter-spacing:-.025em;max-width:18em}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{margin-top:12px;max-width:46em;color:var(--ink-2);font-size:14px;line-height:1.7}
+.lede b{color:var(--ink);font-weight:600}
+
+h2{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);
+  padding-bottom:9px;border-bottom:1px solid var(--rule);margin-bottom:14px}
+.hint{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.6}
+
+/* 입력 테이블 — 대시보드 전역 table 규칙을 덮어씀 */
+table{width:100%;border-collapse:collapse;min-width:0}
+th{font-size:11px;font-weight:600;letter-spacing:.03em;color:var(--ink-2);text-align:right;
+  padding:0 6px 8px;border-bottom:1px solid var(--rule);white-space:nowrap;background:transparent}
+th:first-child{text-align:left}
+td{padding:6px 3px;border-bottom:1px solid var(--rule-2);vertical-align:middle}
+input,select{font-family:inherit;font-size:14px;color:var(--ink);background:var(--card);
+  border:1px solid var(--rule);border-radius:8px;padding:7px 10px;width:100%;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+input.n{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+td.act{width:30px;padding-right:0}
+.x{background:none;border:0;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;
+  padding:4px 6px;border-radius:6px}
+.x:hover{background:var(--chip-bg);color:var(--bad)}
+.addrow{margin-top:12px;background:none;border:1px dashed var(--rule);color:var(--ink-2);
+  font-family:inherit;font-size:13px;padding:9px 14px;border-radius:10px;cursor:pointer;width:100%}
+.addrow:hover{border-color:var(--accent);color:var(--accent-strong);background:var(--accent-soft)}
+[data-theme="dark"] .addrow:hover{color:var(--accent)}
+
+/* 결과 패널 — 대시보드 카드 스타일(라이트/다크 모두 대비 확보) */
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:14px;
+  box-shadow:var(--shadow);padding:22px 20px;position:sticky;top:24px}
+.panel h2{color:var(--ink-2);border-color:var(--rule)}
+
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--rule);font-size:12px;
+  color:var(--muted);line-height:1.75}
+footer b{color:var(--ink-2)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== 채용 파이프라인 ===== */
+.grid{display:grid;grid-template-columns:1fr 340px;gap:28px;margin-top:26px;align-items:start}
+@media(max-width:940px){.grid{grid-template-columns:1fr;gap:24px}.panel{position:static}}
+.scroll{overflow-x:auto}
+.scroll table{min-width:640px}
+
+.big-l{font-size:12px;color:var(--ink-2);letter-spacing:.02em}
+.big{font-family:var(--mono);font-size:38px;font-weight:700;letter-spacing:-.035em;line-height:1.1;
+  margin:3px 0;color:var(--ink)}
+.big small{font-size:16px;font-weight:500;color:var(--ink-2);margin-left:3px}
+.kv{margin-top:20px;border-top:1px solid var(--rule);padding-top:13px}
+.kv div{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--ink-2)}
+.kv div span:last-child{font-family:var(--mono);color:var(--ink);font-variant-numeric:tabular-nums}
+.flag{margin-top:16px;padding:12px 14px;background:var(--accent-soft);border-left:3px solid var(--accent);
+  border-radius:0 8px 8px 0;font-size:12.5px;color:var(--ink-2);line-height:1.6}
+.flag b{color:var(--accent-strong);font-weight:700}
+[data-theme="dark"] .flag b{color:var(--accent)}
+
+section.blk{margin-top:48px}
+.blk-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;
+  border-bottom:1px solid var(--rule);padding-bottom:10px;margin-bottom:18px}
+.blk-head h2{border:0;padding:0;margin:0}
+.blk-head p{font-size:12.5px;color:var(--muted);max-width:40em}
+
+/* 채널별 1명 채용 원가 */
+.ch{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center;
+  padding:13px 0;border-bottom:1px solid var(--rule-2)}
+@media(max-width:560px){.ch{grid-template-columns:1fr;gap:8px}}
+.ch-n{font-size:13.5px;font-weight:600}
+.ch-n em{display:block;font-style:normal;font-size:11.5px;color:var(--ink-2);font-weight:400;margin-top:1px}
+.ch-b{position:relative}
+.ch-track{height:24px;background:var(--rule-2);border-radius:6px;overflow:hidden}
+.ch-fill{height:100%;background:var(--bar-1);border-radius:6px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.ch-fill.top{background:var(--green)}
+.ch-m{display:flex;gap:18px;margin-top:6px;font-size:11.5px;color:var(--ink-2);flex-wrap:wrap}
+.ch-m b{font-family:var(--mono);color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* 단계별 이탈 */
+.stg{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:760px){.stg{grid-template-columns:repeat(2,1fr)}}
+.st{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
+.st-l{font-size:11.5px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
+.st-v{font-family:var(--mono);font-size:24px;font-weight:700;margin:4px 0 2px;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.st-r{font-size:11.5px;color:var(--muted)}
+.st-r b{color:var(--oxide);font-family:var(--mono);font-weight:600}
+
+/* 채용 계획 역산 */
+.plan{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.plan-in{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;
+  padding-bottom:16px;border-bottom:1px solid var(--rule-2);margin-bottom:6px}
+.plan-in label{display:block;font-size:11.5px;color:var(--ink-2);margin-bottom:5px;font-weight:500}
+.plan-in input{width:120px}
+.pr{display:grid;grid-template-columns:1fr repeat(3,minmax(78px,auto)) 76px;gap:10px;
+  padding:11px 0;border-bottom:1px solid var(--rule-2);font-size:13px;align-items:center}
+.pr.h{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--ink-2);border-bottom:1px solid var(--rule)}
+.pr>*:not(:first-child){text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.pr.h>*:not(:first-child){font-family:var(--sans)}
+.ok{color:var(--green);font-weight:700}
+.no{color:var(--oxide);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">채용 파이프라인</div>
+  <h1>지원자가 많은 채널이<br><em>좋은 채널은 아닙니다.</em></h1>
+  <p class="lede">채널마다 <b>1명을 채용하는 데 드는 지원자 수, 기간, 비용</b>이 다릅니다. 유입만 보면 박람회가 가장 커 보이지만, 실제로 입사까지 이어지는 비율과 원가를 나란히 놓으면 순서가 바뀝니다.
+  네 개 채널을 동시에 돌리며 매번 손으로 집계하던 것을 도구로 만들었습니다. 단계별 숫자를 넣으면 <b>어느 채널을 늘리고 어디서 새는지</b>가 나오고, 목표 인원을 넣으면 필요한 지원자 수를 역산합니다.</p>
+</header>
+
+<div class="grid">
+  <section>
+    <h2>채널별 전형 현황</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr>
+          <th>채널</th><th style="width:66px">지원</th><th style="width:66px">서류합격</th>
+          <th style="width:66px">면접합격</th><th style="width:60px">오퍼</th><th style="width:60px">입사</th>
+          <th style="width:66px">소요일</th><th style="width:80px">비용(만원)</th><th></th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <button class="addrow" id="add">채널 추가</button>
+    <p class="hint">소요일은 채용 요청 승인부터 입사일까지의 평균입니다(Time to Fill). 비용은 해당 채널에 실제로 집행한 금액으로, 헤드헌팅 수수료·박람회 부스비·추천 포상금 등이 포함됩니다.</p>
+  </section>
+
+  <aside class="panel">
+    <h2>종합</h2>
+    <div class="big-l">총 입사</div>
+    <div class="big num" id="k_hire">—<small>명</small></div>
+    <div class="kv">
+      <div><span>총 지원자</span><span id="k_app">—</span></div>
+      <div><span>전체 전환율</span><span id="k_conv">—</span></div>
+      <div><span>평균 소요일</span><span id="k_ttf">—</span></div>
+      <div><span>1명당 평균 원가</span><span id="k_cph">—</span></div>
+      <div><span>오퍼 수락률</span><span id="k_offer">—</span></div>
+      <div><span>총 집행 비용</span><span id="k_cost">—</span></div>
+    </div>
+    <div class="flag" id="k_flag">—</div>
+  </aside>
+</div>
+
+<section class="blk">
+  <div class="blk-head">
+    <h2>채널별 1명 채용 원가</h2>
+    <p>막대는 입사 1명당 비용입니다. 짧을수록 효율이 높습니다. 옆의 숫자는 1명을 뽑기 위해 필요한 지원자 수와 소요일입니다.</p>
+  </div>
+  <div id="chans"></div>
+  <p class="hint">비용만으로 채널을 정리하면 안 됩니다. 저렴한 채널이 특정 직군에서만 통하거나 인원 확보 속도가 느릴 수 있어, 원가·속도·직군 적합도를 함께 봐야 합니다.</p>
+</section>
+
+<section class="blk">
+  <div class="blk-head">
+    <h2>단계별 이탈</h2>
+    <p>어느 단계에서 가장 많이 빠지는지 봅니다. 오퍼 단계 이탈이 크면 처우 수준이나 협의 방식을 점검할 신호입니다.</p>
+  </div>
+  <div class="stg" id="stages"></div>
+</section>
+
+<section class="blk">
+  <div class="blk-head">
+    <h2>채용 계획 역산</h2>
+    <p>목표 인원과 기한을 넣으면, 채널별로 필요한 지원자 수와 예상 비용을 계산합니다.</p>
+  </div>
+  <div class="plan">
+    <div class="plan-in">
+      <div><label>목표 인원(명)</label><input class="n p" id="p_cnt" value="8"></div>
+      <div><label>기한(일)</label><input class="n p" id="p_day" value="45"></div>
+    </div>
+    <div id="planrows"></div>
+    <p class="hint">한 채널로만 채우는 경우를 가정한 계산입니다. 실제로는 직군과 기한에 따라 채널을 섞고, 기한 안에 어려운 채널은 병행 채널로 보완합니다.</p>
+  </div>
+</section>
+
+<footer>
+  <b>채용 파이프라인 트래커</b> · 인사 실무용으로 직접 기획하고 만든 도구입니다. 입력값은 예시이며 브라우저 안에서만 계산되고 어디에도 저장되지 않습니다.<br>
+  전환율과 소요일은 직군·시기·노동시장 상황에 따라 크게 달라집니다. 절대 수치보다 채널 간 상대 비교와 추세 관찰에 쓰는 것이 적절합니다.
+</footer>
+
+</div>
+
+<script src="assets/app.js?v=9"></script>
+<script>
+renderNav("pipeline.html");
+const $=id=>document.getElementById(id);
+let ch=[
+  {n:"헤드헌팅",  app:24, doc:14, itv:6,  off:4, hire:3, day:38, cost:2100},
+  {n:"지역대학 산학", app:62, doc:28, itv:11, off:8, hire:7, day:45, cost:320},
+  {n:"채용박람회", app:145,doc:41, itv:12, off:7, hire:5, day:52, cost:480},
+  {n:"사내추천",  app:18, doc:15, itv:9,  off:7, hire:6, day:26, cost:600}
+];
+const F=["app","doc","itv","off","hire","day","cost"];
+const won=v=>!isFinite(v)?"—":(v>=10000?(v/10000).toFixed(2)+"억":Math.round(v).toLocaleString()+"만");
+const pct=v=>!isFinite(v)?"—":(v*100).toFixed(1)+"%";
+
+function drawRows(){
+  $("rows").innerHTML=ch.map((c,i)=>`<tr>
+    <td><input value="${c.n}" data-i="${i}" data-f="n"></td>
+    ${F.map(f=>`<td><input class="n" value="${c[f]}" data-i="${i}" data-f="${f}"></td>`).join("")}
+    <td class="act">${ch.length>1?`<button class="x" data-del="${i}" aria-label="삭제">×</button>`:""}</td></tr>`).join("");
+  $("rows").querySelectorAll("input").forEach(el=>el.addEventListener("input",e=>{
+    const i=+e.target.dataset.i,f=e.target.dataset.f;
+    ch[i][f]= f==="n"?e.target.value:(parseFloat(e.target.value)||0); calc();}));
+  $("rows").querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",e=>{
+    ch.splice(+e.target.dataset.del,1);drawRows();calc();}));
+}
+
+function calc(){
+  const T=F.reduce((o,f)=>(o[f]=ch.reduce((s,c)=>s+c[f],0),o),{});
+  const hire=T.hire||0;
+  const ttf=hire? ch.reduce((s,c)=>s+c.day*c.hire,0)/hire : 0;
+
+  $("k_hire").innerHTML=hire+"<small>명</small>";
+  $("k_app").textContent=T.app.toLocaleString()+"명";
+  $("k_conv").textContent=pct(T.app?hire/T.app:NaN);
+  $("k_ttf").textContent=ttf?ttf.toFixed(1)+"일":"—";
+  $("k_cph").textContent=hire?won(T.cost/hire)+"원":"—";
+  $("k_offer").textContent=pct(T.off?hire/T.off:NaN);
+  $("k_cost").textContent=won(T.cost)+"원";
+
+  // 인사이트: 원가 최저 채널 + 오퍼 수락률 경고
+  const eff=ch.filter(c=>c.hire>0).map(c=>({n:c.n,cph:c.cost/c.hire,rate:c.hire/c.app,day:c.day}));
+  let msg="채널별 데이터를 입력하면 요약이 표시됩니다.";
+  if(eff.length){
+    const best=eff.reduce((a,b)=>a.cph<b.cph?a:b);
+    const fast=eff.reduce((a,b)=>a.day<b.day?a:b);
+    const acc=T.off?hire/T.off:1;
+    msg=`원가가 가장 낮은 채널은 <b>${best.n}</b>(1명당 ${won(best.cph)}원), 가장 빠른 채널은 <b>${fast.n}</b>(${fast.day}일)입니다.`;
+    if(acc<0.8) msg+=` 오퍼 수락률이 <b>${pct(acc)}</b>로 낮습니다. 처우 수준과 협의 시점을 점검할 구간입니다.`;
+  }
+  $("k_flag").innerHTML=msg;
+
+  // 채널 비교
+  const maxCph=Math.max(...ch.map(c=>c.hire?c.cost/c.hire:0),1);
+  const minCph=Math.min(...ch.filter(c=>c.hire>0).map(c=>c.cost/c.hire).concat([Infinity]));
+  $("chans").innerHTML=ch.map(c=>{
+    const cph=c.hire?c.cost/c.hire:0, rate=c.app?c.hire/c.app:0;
+    const need=rate?Math.ceil(1/rate):0;
+    return `<div class="ch">
+      <div class="ch-n">${c.n||"채널"}<em>입사 ${c.hire}명 · 전환 ${pct(rate)}</em></div>
+      <div class="ch-b">
+        <div class="ch-track"><div class="ch-fill ${cph===minCph?"top":""}" style="width:${Math.max(cph/maxCph*100,1.5)}%"></div></div>
+        <div class="ch-m"><span>1명당 <b>${c.hire?won(cph)+"원":"—"}</b></span>
+          <span>필요 지원자 <b>${need||"—"}명</b></span>
+          <span>소요 <b>${c.day}일</b></span></div>
+      </div></div>`;}).join("");
+
+  // 단계별
+  const st=[["지원",T.app],["서류합격",T.doc],["면접합격",T.itv],["오퍼",T.off],["입사",T.hire]];
+  $("stages").innerHTML=st.map((s,i)=>{
+    const prev=i?st[i-1][1]:0;
+    const pass=i&&prev?s[1]/prev:null;
+    return `<div class="st"><div class="st-l">${s[0]}</div>
+      <div class="st-v">${s[1].toLocaleString()}</div>
+      <div class="st-r">${i===0?"유입 전체":`통과 ${pct(pass)} · 이탈 <b>${(prev-s[1]).toLocaleString()}명</b>`}</div></div>`;}).join("");
+
+  // 역산
+  const goal=parseFloat($("p_cnt").value)||0, lim=parseFloat($("p_day").value)||0;
+  $("planrows").innerHTML=`<div class="pr h"><div>채널</div><div>필요 지원자</div><div>예상 비용</div><div>소요일</div><div>기한 내</div></div>`
+    + ch.map(c=>{
+      const rate=c.app?c.hire/c.app:0, cph=c.hire?c.cost/c.hire:0;
+      const need=rate?Math.ceil(goal/rate):null;
+      const ok=c.day<=lim;
+      return `<div class="pr"><div>${c.n||"채널"}</div>
+        <div>${need?need.toLocaleString()+"명":"—"}</div>
+        <div>${c.hire?won(cph*goal)+"원":"—"}</div>
+        <div>${c.day}일</div>
+        <div class="${ok?"ok":"no"}">${ok?"가능":"초과"}</div></div>`;}).join("");
+}
+
+$("add").addEventListener("click",()=>{ch.push({n:"신규 채널",app:0,doc:0,itv:0,off:0,hire:0,day:30,cost:0});drawRows();calc();});
+document.querySelectorAll(".p").forEach(el=>el.addEventListener("input",calc));
+drawRows();calc();
+</script>
+</body>
+</html>
