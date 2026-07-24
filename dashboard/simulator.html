@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=10">
+<link rel="stylesheet" href="assets/style.css?v=11">
 <style>
 /* ===== Biz Portal 디자인 시스템 토큰 매핑 =====
    기존 대시보드(그린 SaaS)와 동일한 색/폰트를 쓰도록 변수 값만 교체.
@@ -146,7 +146,7 @@ details[open] summary::after{content:"접기"}
   <div class="eyebrow">인건비 시뮬레이터</div>
   <h1>연봉 총액으로 잡은 예산은<br><em>매년 모자랍니다.</em></h1>
   <p class="lede">사업주는 연봉 외에 <b>4대보험과 퇴직급여</b>를 함께 부담합니다. 인원 계획을 세울 때 이 부분을 빼고 계산하면 예산은 반드시 어긋납니다.
-  고객사 계약이 바뀔 때마다 엑셀로 다시 계산하던 작업을 도구로 만들었습니다. 직군별 인원과 연봉을 넣으면 <b>실제 총부담</b>이 나오고, 채용·감축·근로시간 단축·도급 전환을 같은 기준으로 비교할 수 있습니다.</p>
+  고객사 계약이 바뀔 때마다 엑셀로 다시 계산하던 작업을 도구로 만들었습니다. 직군별 인원과 연봉을 넣으면 <b>실제 총부담</b>이 나오고, 채용·감축·근로시간 단축·도급 전환을 같은 기준으로 비교할 수 있습니다.<br>기본값은 현재 우리 공장 구성(46명)입니다. 여기서 나오는 연 17.8억은 <b>연봉 기준 총부담</b>으로, 종합 현황의 월 인건비 161백만 원에서 잔업·특근 수당 13백만 원을 뺀 금액과 일치합니다.</p>
 </header>
 
 <div class="grid">
@@ -210,8 +210,8 @@ details[open] summary::after{content:"접기"}
       <h3>신규 채용</h3>
       <p class="d">인원을 늘렸을 때 예산이 얼마나 더 필요한지 봅니다. 연봉이 아니라 총부담으로 잡아야 합니다.</p>
       <div class="ctrl"><label>직군</label><select id="h_grp"></select></div>
-      <div class="ctrl"><label>인원(명)</label><input class="n s" id="h_cnt" value="3"></div>
-      <div class="ctrl"><label>제시 연봉(만원)</label><input class="n s" id="h_sal" value="5000"></div>
+      <div class="ctrl"><label>인원(명)</label><input class="n s" id="h_cnt" value="2"></div>
+      <div class="ctrl"><label>제시 연봉(만원)</label><input class="n s" id="h_sal" value="3000"></div>
       <div class="out">
         <div><span>연봉 증가분</span><span id="h_a">—</span></div>
         <div class="hl cost"><span>실제 추가 부담(연)</span><span id="h_b">—</span></div>
@@ -223,7 +223,7 @@ details[open] summary::after{content:"접기"}
       <h3>인원 감축</h3>
       <p class="d">퇴직금과 위로금은 감축 시점에 한 번에 나갑니다. 첫해 효과는 생각보다 작습니다.</p>
       <div class="ctrl"><label>직군</label><select id="c_grp"></select></div>
-      <div class="ctrl"><label>인원(명)</label><input class="n s" id="c_cnt" value="10"></div>
+      <div class="ctrl"><label>인원(명)</label><input class="n s" id="c_cnt" value="4"></div>
       <div class="ctrl"><label>위로금(개월분)</label><input class="n s" id="c_sol" value="3"></div>
       <div class="out">
         <div class="save"><span>연간 절감</span><span id="c_a">—</span></div>
@@ -251,7 +251,7 @@ details[open] summary::after{content:"접기"}
       <h3>무급휴직</h3>
       <p class="d">급여는 멈추지만 건강보험은 계속 부과됩니다. 이 차이를 반영해 계산합니다.</p>
       <div class="ctrl"><label>직군</label><select id="u_grp"></select></div>
-      <div class="ctrl"><label>인원(명)</label><input class="n s" id="u_cnt" value="15"></div>
+      <div class="ctrl"><label>인원(명)</label><input class="n s" id="u_cnt" value="8"></div>
       <div class="ctrl"><label>기간(개월)</label><input class="n s" id="u_mon" value="3"></div>
       <div class="out">
         <div><span>급여 미지급분</span><span id="u_a">—</span></div>
@@ -265,8 +265,8 @@ details[open] summary::after{content:"접기"}
       <h3>도급 전환</h3>
       <p class="d">고정비를 변동비로 바꿉니다. 4대보험과 퇴직급여 부담이 도급비로 대체됩니다.</p>
       <div class="ctrl"><label>직군</label><select id="o_grp"></select></div>
-      <div class="ctrl"><label>전환 인원(명)</label><input class="n s" id="o_cnt" value="30"></div>
-      <div class="ctrl"><label>도급 단가(월/인, 만원)</label><input class="n s" id="o_fee" value="330"></div>
+      <div class="ctrl"><label>전환 인원(명)</label><input class="n s" id="o_cnt" value="10"></div>
+      <div class="ctrl"><label>도급 단가(월/인, 만원)</label><input class="n s" id="o_fee" value="300"></div>
       <div class="out">
         <div><span>기존 총부담(연)</span><span id="o_a">—</span></div>
         <div><span>도급비(연)</span><span id="o_b">—</span></div>
@@ -297,14 +297,14 @@ details[open] summary::after{content:"접기"}
 
 </div>
 
-<script src="assets/app.js?v=10"></script>
+<script src="assets/app.js?v=11"></script>
 <script>
 renderNav("simulator.html");
 const $=id=>document.getElementById(id);
 let groups=[
-  {name:"사무직",count:15,sal:4200},
-  {name:"기술·연구직",count:10,sal:5500},
-  {name:"현장직",count:45,sal:3300}
+  {name:"생산직(봉제·조립 등)",count:24,sal:2900},
+  {name:"품질·물류",count:10,sal:3200},
+  {name:"사무직(자재·영업·경영지원)",count:12,sal:4000}
 ];
 
 function fmt(v){ // v: 만원
