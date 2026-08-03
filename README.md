@@ -22,17 +22,63 @@
   - `people.html` 인력·조직: 부서별 인원·인건비, 입퇴사 현황
   - `recruiting.html` 채용: 칸반 파이프라인, 후보자·포지션 관리
 - **기술**: 순수 HTML/CSS/JS + Chart.js(로컬 번들), 외부 CDN 의존 없음, 다크모드 지원
-- **데이터**: `dashboard/assets/data.js`에 정적 포함 (2026년 5월 기준 스냅샷)
+- **데이터**: 노션에서 받아 `dashboard/assets/data.js`로 생성 (아래 파이프라인)
+
+## 데이터 파이프라인
+
+`data.js`는 **생성물**입니다. 직접 고치지 말고 노션을 고친 뒤 다시 만듭니다.
+
+```
+노션 12개 DB ──fetch──▶ data/notion-raw.json ──normalize──▶ data/source.json
+                                                                  │
+                          data/manual.json ────────────────────────┤
+                       (의사결정·현금흐름 예측 등 DB 밖의 값)        │
+                                                              verify ─▶ build
+                                                                         │
+                                                        dashboard/assets/data.js
+```
+
+```bash
+python3 tools/sync.py            # 정규화 → 검증 → 생성
+python3 tools/sync.py --fetch    # 노션에서 새로 받아온 뒤 재생성 (NOTION_TOKEN 필요)
+python3 tools/sync.py --strict   # 경고가 있어도 중단
+bash tools/deploy.sh             # 검증 통과 시에만 VM 배포
+```
+
+Claude Code에서는 `/sync-dashboard` 로 수집부터 배포까지 한 번에 진행할 수 있습니다
+(토큰 없이 노션 MCP 사용, 단 워크스페이스 요금제에 따라 쿼리 한도 있음).
+
+| 파일 | 역할 |
+|---|---|
+| `tools/config.py` | 노션 DB 목록·부서→직군·파생 규칙 (여기만 고치면 됨) |
+| `tools/fetch_notion.py` | 노션 공식 API 수집 (`NOTION_TOKEN` 필요) |
+| `tools/normalize.py` | 노션 원본 → 월 배열 기준 정규화 |
+| `tools/verify.py` | 정합성 검증 — 오류는 배포 차단, 경고는 보고 |
+| `tools/build.py` | `data.js` 생성 |
+| `data/manual.json` | 노션 DB에 없는 값(의사결정 안건·현금흐름 예측)만 사람이 관리 |
+
+### 단일 진실 공급원
+
+노션 DB끼리 값이 어긋날 때 무엇을 믿을지 `tools/config.py`에 못박아 두고, 어긋난
+지점은 `verify.py`가 전부 보고합니다.
+
+| 항목 | 출처 |
+|---|---|
+| 매출·현금 잔고·총원·입퇴사 | 📈 경영 핵심 지표 DB |
+| 총비용 | 🏭 제조원가 DB의 제조원가 + 판관비 |
+| 영업이익·이익률 | 매출 − 총비용 에서 파생 |
+| 전사 인건비 | 제조원가 DB 노무비 + 부서별 사무직 인건비 |
+| 고정비·변동비 | 🧾 월별 비용 구조 DB |
 
 ## 배포 (GCP VM)
 
 ```bash
-# 1. 정적 파일 업로드
-gcloud compute scp --recurse . n8n-instance:/tmp/site --zone=us-west1-b
-gcloud compute ssh n8n-instance --zone=us-west1-b \
-  --command="sudo rsync -a --delete --exclude=deploy --exclude=.git --exclude=README.md /tmp/site/ /var/www/portfolio/"
+bash tools/deploy.sh
+```
 
-# 2. Nginx 설정 (최초 1회)
+`~/.config/gcloud`의 `portfolio` 구성(whlee79 계정)을 사용합니다. 최초 1회 Nginx 설정:
+
+```bash
 sudo cp deploy/portfolio.nginx.conf /etc/nginx/sites-available/portfolio
 sudo ln -sf /etc/nginx/sites-available/portfolio /etc/nginx/sites-enabled/portfolio
 sudo rm -f /etc/nginx/sites-enabled/default
