@@ -7,15 +7,15 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/favicon-32.png">
-<link rel="stylesheet" href="assets/style.css?v=11">
+<link rel="stylesheet" href="assets/style.css?v=12">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=11"></script>
+<script src="assets/data.js?v=12"></script>
 </head>
 <body>
 <div class="wrap">
   <div class="page-head">
     <h1>💰 월간 재무 요약 대시보드</h1>
-    <div class="meta">2026년 6월 기준 · 매트리스 제조공장 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
+    <div class="meta">2026년 7월 기준 · 매트리스 제조공장 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
     <p class="lede">매출은 느는데 이익이 그만큼 안 늘던 이유를 찾다가 만들었습니다. 총비용을 제조원가와 판관비로 나누고 <b>대당 원가</b>까지 내려가니, 원자재 단가 인상분이 어디서 이익을 갉아먹는지가 드러났습니다.</p>
   </div>
 
@@ -25,7 +25,7 @@
   <h2 class="sec"><span class="sec-no">02</span>월별 매출·비용 추이</h2>
   <div class="card">
     <h3>매출 · 비용 · 영업이익</h3>
-    <div class="sub">2026년 1월 ~ 6월 · 백만 원</div>
+    <div class="sub">2026년 1월 ~ 7월 · 백만 원</div>
     <div class="chart-box"><canvas id="chart-core"></canvas></div>
   </div>
 
@@ -91,19 +91,19 @@
       <tbody id="tbl-forecast"></tbody>
     </table>
   </div>
-  <p class="note">예측치는 6월 말 기준 가정이며, 의사결정 안건(임대 재계약·ERP 가동 일정) 결과에 따라 변동됩니다.</p>
+  <p class="note">예측치는 7월 말 기준 가정이며, 의사결정 안건(임대 재계약·ERP 가동 일정) 결과에 따라 변동됩니다.</p>
 
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=11"></script>
+<script src="assets/app.js?v=12"></script>
 <script>
 renderNav("finance.html");
 const F = DATA.finance, CS = DATA.costStructure, M = DATA.manufacturing, MI = DATA.materialIndex;
 const last = F.revenue.length - 1, prev = last - 1;
 
 document.getElementById("kpis").innerHTML = `
-  <div class="kpi"><div class="label">매출</div><div class="value">${F.revenue[last]} <small>백만 원</small></div><div class="delta up">▲ ${F.revenue[last]-F.revenue[prev]} <span class="vs">상반기 최고</span></div></div>
+  <div class="kpi"><div class="label">매출</div><div class="value">${F.revenue[last]} <small>백만 원</small></div><div class="delta up">▲ ${F.revenue[last]-F.revenue[prev]} <span class="vs">월간 최고</span></div></div>
   <div class="kpi"><div class="label">비용</div><div class="value">${F.cost[last]} <small>백만 원</small></div><div class="delta down">▲ ${F.cost[last]-F.cost[prev]} <span class="vs">고정비 비중 ${(CS.fixed[last]/(CS.fixed[last]+CS.variable[last])*100).toFixed(0)}%</span></div></div>
   <div class="kpi"><div class="label">영업이익</div><div class="value">${F.profit[last]} <small>백만 원</small></div><div class="delta up">▲ ${F.profit[last]-F.profit[prev]} <span class="vs">이익률 ${F.marginPct[last]}%</span></div></div>
   <div class="kpi"><div class="label">현금 잔고</div><div class="value">${F.cash[last].toLocaleString()} <small>백만 원</small></div><div class="delta up">▲ ${F.cash[last]-F.cash[prev]} <span class="vs">운영자금 약 ${(F.cash[last]/F.cost[last]).toFixed(1)}개월분</span></div></div>`;

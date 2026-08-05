@@ -7,15 +7,15 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/favicon-32.png">
-<link rel="stylesheet" href="assets/style.css?v=11">
+<link rel="stylesheet" href="assets/style.css?v=12">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=11"></script>
+<script src="assets/data.js?v=12"></script>
 </head>
 <body>
 <div class="wrap">
   <div class="page-head">
     <h1>👥 인력·조직 대시보드</h1>
-    <div class="meta">2026년 6월 기준 (총원 46명 · 생산직 34/사무직 12) · 인건비 단위: 백만 원</div>
+    <div class="meta">2026년 7월 기준 (총원 46명 · 생산직 34/사무직 12) · 인건비 단위: 백만 원</div>
     <p class="lede">인원은 그대로인데 인건비만 오르는 달이 반복됐습니다. <b>잔업·특근 시간을 인원·인건비와 같은 화면</b>에 놓으니, 증가분이 채용이 아니라 생산 물량에서 온다는 것이 분명해졌습니다.</p>
   </div>
 
@@ -27,12 +27,12 @@
   <div class="grid2">
     <div class="card">
       <h3>부서별 인원</h3>
-      <div class="sub">2026년 6월 · 명</div>
+      <div class="sub">2026년 7월 · 명</div>
       <div class="chart-box short"><canvas id="chart-dept-count"></canvas></div>
     </div>
     <div class="card">
       <h3>부서별 월 인건비</h3>
-      <div class="sub">2026년 6월 · 백만 원</div>
+      <div class="sub">2026년 7월 · 백만 원</div>
       <div class="chart-box short"><canvas id="chart-dept-cost"></canvas></div>
     </div>
   </div>
@@ -96,7 +96,7 @@
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=11"></script>
+<script src="assets/app.js?v=12"></script>
 <script>
 renderNav("people.html");
 const P = DATA.people, D = DATA.departments, R = DATA.recruiting, SH = DATA.shift, F = DATA.finance;
@@ -105,7 +105,7 @@ const last = P.headcount.length - 1, prev = last - 1;
 document.getElementById("kpis").innerHTML = `
   <div class="kpi"><div class="label">총원</div><div class="value">${P.headcount[last]} <small>명</small></div><div class="delta up">▲ ${P.headcount[last]-P.headcount[prev]}명 <span class="vs">전월 대비</span></div></div>
   <div class="kpi"><div class="label">인건비</div><div class="value">${P.laborCost[last]} <small>백만 원</small></div><div class="delta"><span class="vs">매출 대비 ${(P.laborCost[last] / F.revenue[last] * 100).toFixed(1)}%</span></div></div>
-  <div class="kpi"><div class="label">누적 퇴사율 (1~6월)</div><div class="value">${P.attritionPct}<small>%</small></div><div class="delta"><span class="vs">퇴사 1명 / 평균 인원 43.7명</span></div></div>
+  <div class="kpi"><div class="label">누적 퇴사율 (1~7월)</div><div class="value">${P.attritionPct}<small>%</small></div><div class="delta"><span class="vs">퇴사 1명 / 평균 인원 44.0명</span></div></div>
   <div class="kpi"><div class="label">채용 진행</div><div class="value">${R.candidates.filter(c => /^[1-4]\./.test(c.stage)).length} <small>명 파이프라인</small></div><div class="delta"><span class="vs">오픈 포지션 ${R.positions.filter(p => p.status === "진행중").length}개 (생산직·품질·설비보전)</span></div></div>`;
 
 makeBarChart("chart-dept-count", D.map(d => d.name),

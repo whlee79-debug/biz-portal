@@ -17,6 +17,23 @@ if [ -z "$GCLOUD" ]; then
 fi
 
 export CLOUDSDK_ACTIVE_CONFIG_NAME="${CLOUDSDK_ACTIVE_CONFIG_NAME:-portfolio}"
+
+# gcloud는 Python 3.10~3.14가 필요합니다. GUI 앱처럼 PATH가 최소인 환경에서는
+# 시스템 3.9만 보여 실패하므로, 쓸 수 있는 인터프리터를 찾아 명시합니다.
+if [ -z "${CLOUDSDK_PYTHON:-}" ]; then
+  for v in 3.12 3.13 3.11 3.10 3.14; do
+    for p in "$HOME/.local/bin/python$v" "/opt/homebrew/bin/python$v" "/usr/local/bin/python$v"; do
+      if [ -x "$p" ]; then
+        export CLOUDSDK_PYTHON="$p"
+        break 2
+      fi
+    done
+  done
+fi
+if [ -z "${CLOUDSDK_PYTHON:-}" ]; then
+  echo "Python 3.10~3.14를 찾지 못했습니다. CLOUDSDK_PYTHON=/path/to/python3.12 로 지정하세요." >&2
+  exit 1
+fi
 VM="${VM:-n8n-instance}"
 ZONE="${ZONE:-us-west1-b}"
 REMOTE_TMP="/tmp/site"
