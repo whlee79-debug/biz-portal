@@ -1,7 +1,7 @@
 /* 2026년 8월 경영지원 보고 — 7월 실적 기준 (단위: 백만 원)
    ⚠️ 이 파일은 자동 생성됩니다 — 직접 고치지 마세요.
-   노션 '경영 현황 종합 대시보드'를 고친 뒤 `python3 tools/sync.py` 를 실행하세요.
-   생성: 2026-08-04T15:49:33+09:00 · 원본: 노션(notion-api) · 모든 수치는 가상 데모 데이터 */
+   옵시디언 BizPortal 볼트를 고친 뒤 `python3 tools/sync.py` 를 실행하세요.
+   생성: 2026-08-21T15:22:32+09:00 · 원본: obsidian · 모든 수치는 가상 데모 데이터 */
 const DATA = {
   asOf: "2026년 7월",
   months: ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07"],
@@ -13,7 +13,7 @@ const DATA = {
     profit: [30, 53, 61, 44, 78, 91, 97],
     cash: [850, 910, 960, 1010, 1080, 1170, 1255],
     marginPct: [7.1, 11.8, 12.7, 9.6, 15.3, 17.2, 17.8],
-    notes: ["연초 계약 갱신 집중", "", "신규 거래처 2곳 추가", "ERP 1차 비용 집행", "분기 최고 실적", "A사 연간 계약 체결, 상반기 최고 실적", "A사 계약 매출 첫 반영, 월간 최고 실적"]
+    notes: ["동절기 물량 감소, 연간 단가계약 갱신", "", "고성 방파제 수주·착공", "우천으로 부산 공정 지연", "인천 기성 확대", "부산 2공구 증액 계약", "3현장 동시 가동, 월간 최고 기성"]
   },
 
   costStructure: {
@@ -21,47 +21,51 @@ const DATA = {
     variable: [190, 196, 209, 204, 218, 224, 231]
   },
 
-  /* 제조원가 — 총비용 = 제조원가 + 판관비 로 정합 */
+  /* 시공원가 — 총비용 = 시공원가 + 판관비 로 정합 */
   manufacturing: {
-    output: [1180, 1260, 1340, 1300, 1440, 1500, 1540], // 생산량(대)
-    material: [175, 180, 192, 188, 200, 205, 210],      // 재료비
-    labor: [98, 97, 103, 105, 110, 114, 116],           // 노무비(생산직)
-    overhead: [40, 42, 44, 44, 45, 45, 46],             // 제조경비(감가상각·전력·수선)
-    total: [313, 319, 339, 337, 355, 364, 372],         // 제조원가 합계
-    sga: [77, 78, 80, 79, 77, 75, 76],                  // 판매관리비 (= 총비용 - 제조원가)
-    unitCost: [26.5, 25.3, 25.3, 25.9, 24.7, 24.3, 24.2], // 대당 제조원가(만 원)
-    notes: ["", "", "신규 라인 시운전", "폼 단가 인상 반영", "가동률 개선", "규모 효과로 대당 원가 최저", "A사 물량 반영, 대당 원가 최저 경신"]
+    output: [2900, 3010, 3260, 3210, 3440, 3570, 3690], // 시공량(m, 그라우팅 주입공 연장)
+    material: [76, 78, 82, 81, 86, 86, 88],             // 재료비(시멘트·약액 등)
+    labor: [24, 24, 27, 27, 27, 32, 33],                // 노무비(직영 현장직)
+    dayLabor: [11, 12, 14, 13, 15, 15, 15],             // 일용직 노무비
+    equipment: [82, 84, 88, 88, 92, 94, 96],            // 장비비(천공기·펌프 임대, 유류, 수선)
+    outsourcing: [120, 121, 128, 128, 135, 137, 140],   // 외주비(협력업체)
+    total: [313, 319, 339, 337, 355, 364, 372],         // 시공원가 합계
+    sga: [77, 78, 80, 79, 77, 75, 76],                  // 판매관리비 (= 총비용 - 시공원가)
+    unitCost: [10.8, 10.6, 10.4, 10.5, 10.3, 10.2, 10.1], // m당 시공원가(만 원)
+    notes: ["", "", "고성 착공 초기 투입", "우천 공정 지연", "가동률 개선", "부산 2공구 증량", "m당 원가 연중 최저"]
   },
 
-  /* 주요 원자재 단가 지수 (2026-01 = 100) */
+  /* 주요 자재·유류 단가 지수 (2026-01 = 100) */
   materialIndex: {
-    foam: [100, 101.6, 104.7, 107.8, 110, 108.8, 109.4], // 우레탄폼
-    spring: [100, 100, 103.9, 105.3, 106.6, 105.3, 106.6], // 포켓스프링(강선)
-    fabric: [100, 101.3, 102.6, 103.9, 107.9, 109.2, 110.5] // 원단
+    cement: [100.0, 101.6, 104.7, 107.8, 110.0, 108.8, 109.4], // 시멘트
+    chem: [100.0, 100.0, 103.9, 105.3, 106.6, 105.3, 106.6], // 그라우트 약액
+    fuel: [100.0, 101.3, 102.6, 103.9, 107.9, 109.2, 110.5] // 경유(장비 유류)
   },
 
   cashForecast: [
-    { month: "2026-08", inflow: 520, outflow: 480, balance: 1295, note: "ERP 잔여 예산 집행 반영" },
-    { month: "2026-09", inflow: 555, outflow: 470, balance: 1380, note: "공장 임대 재계약 결과 반영" },
-    { month: "2026-10", inflow: 560, outflow: 485, balance: 1455, note: "하반기 생산직 충원 인건비 반영" }
+    { month: "2026-08", inflow: 520, outflow: 480, balance: 1295, note: "부산 기성 수금 반영" },
+    { month: "2026-09", inflow: 555, outflow: 470, balance: 1380, note: "인천 중간 기성 수금 반영" },
+    { month: "2026-10", inflow: 560, outflow: 485, balance: 1455, note: "고성 기성 + 천공기 구매 계약금 반영" }
   ],
 
   people: {
-    headcount: [42, 42, 43, 44, 45, 46, 46],
-    laborCost: [145, 144, 150, 152, 157, 161, 163],     // 전사 인건비(생산직 노무비 + 사무직, 잔업·특근 포함)
-    joins: [1, 0, 2, 1, 1, 1, 0],
-    leaves: [0, 0, 1, 0, 0, 0, 0],
-    notes: ["", "", "영업 1명 퇴사", "", "인사 인턴 정규 전환", "봉제·조립 생산직 1명 입사", "하반기 충원 3명 전형 진행 중"],
-    attritionPct: 2.3
+    headcount: [9, 9, 10, 10, 11, 12, 12],
+    laborCost: [39, 39, 42, 42, 42, 47, 48],            // 정직원 인건비(현장 노무비 + 내근, 잔업·특근 포함 · 일용직 별도)
+    joins: [0, 0, 1, 0, 1, 1, 0],
+    leaves: [0, 0, 0, 0, 0, 0, 0],
+    notes: ["", "", "고성 현장 개설 — 기능공 1명 입사", "", "경영지원 인턴 입사(5/1)", "그라우팅 기능공 1명 입사(6/22)", "천공기 운전원 채용 진행 중"],
+    attritionPct: 0.0
   },
 
-  /* 교대·근태 (경영지원 소관: 인건비 변동 관리) */
+  /* 근태·일용직 (경영지원 소관: 인건비·공수 관리) */
   shift: {
-    fieldStaff: [30, 30, 31, 32, 33, 34, 34],           // 생산직(현장)
-    officeStaff: [12, 12, 12, 12, 12, 12, 12],          // 사무직
-    overtimeHours: [980, 950, 1180, 1120, 1290, 1340, 1420], // 잔업 시간(생산직 합계)
-    holidayHours: [180, 160, 240, 210, 290, 320, 340],  // 특근(휴일근로) 시간
-    allowance: [9, 8, 11, 10, 12, 13, 15]               // 잔업·특근 수당(백만 원)
+    fieldStaff: [6, 6, 7, 7, 7, 8, 8],                  // 현장직(정직원)
+    officeStaff: [3, 3, 3, 3, 4, 4, 4],                 // 내근직(공무·경영지원)
+    dayWorkers: [3, 3, 4, 4, 4, 4, 4],                  // 일용직 평균 인원
+    dayManDays: [61, 65, 78, 72, 83, 83, 84],           // 일용 공수(연인원)
+    overtimeHours: [190, 180, 230, 220, 250, 290, 310], // 잔업 시간(현장직 합계)
+    holidayHours: [40, 40, 60, 50, 70, 90, 100],        // 특근(휴일근로) 시간
+    allowance: [3, 3, 4, 4, 4, 6, 7]                    // 잔업·특근 수당(백만 원)
   },
 
   /* 안전 (경영지원 취합·보고) */
@@ -72,50 +76,50 @@ const DATA = {
   },
 
   departments: [
-    { name: "물류·출하", count: 5, cost: 17, note: "압축포장·출하" },
-    { name: "경영지원", count: 4, cost: 15, note: "인사·회계·총무 / 인턴 정규 전환 완료" },
-    { name: "품질관리", count: 5, cost: 17, note: "입고·공정·출하 검사 / 품질관리 1명 채용 중" },
-    { name: "생산", count: 24, cost: 82, note: "스프링·폼재단·퀼팅·봉제·조립 5개 공정" },
-    { name: "영업", count: 4, cost: 17, note: "B2B(호텔·가구점)·B2C" },
-    { name: "자재·구매", count: 4, cost: 15, note: "원자재 수급·재고 관리" }
+    { name: "부산현장", count: 3, cost: 13, note: "OO지하차도 차수 그라우팅 — 소장 1·기능공 2" },
+    { name: "인천현장", count: 2, cost: 8, note: "공동주택 지반보강(JSP) — 소장 1·기능공 1" },
+    { name: "고성현장", count: 2, cost: 8, note: "방파제 기초 그라우팅 — 소장 1·기능공 1" },
+    { name: "장비", count: 1, cost: 4, note: "천공기 2대·그라우팅 펌프 3대 관리·정비" },
+    { name: "공무", count: 2, cost: 8, note: "견적·기성 청구·발주처 대응" },
+    { name: "경영지원", count: 2, cost: 7, note: "인사·회계·총무 (일용직 노무 신고 포함)" }
   ],
 
   decisions: [
-    { title: "ERP 가동 일정·교육 계획 승인", desc: "9월 말 가동 목표, 공정별 교육 일정 확정", due: "9/12" },
-    { title: "공장 임대 재계약 최종 결정", desc: "임대료 인상률 5% 협상안 수용 여부", due: "9/26" },
-    { title: "하반기 생산직 충원 계획 승인", desc: "봉제·조립 2명 추가, 설비보전 1명 신설", due: "10/16" }
+    { title: "천공기 임대 → 구매 전환 결정", desc: "월 임대료 대비 구매·감가 비교, 3현장 가동률 근거", due: "9/12" },
+    { title: "고성 현장 동절기 공정 계획 승인", desc: "해상 기상 리스크 — 12~2월 공정·인력 운용안", due: "9/26" },
+    { title: "일용직 상용직 전환 검토", desc: "월 80공수 이상 고정 출역 2명 — 4대보험·퇴직급여 비용 비교", due: "10/16" }
   ],
 
   projects: [
-    { name: "ISO 9001 인증 갱신", type: "인증/규제", dept: "품질관리", status: "3. 완료", progress: 100, due: "2026-05-30", note: "5/28 갱신 완료" },
-    { name: "ERP 시스템 도입", type: "프로젝트", dept: "경영지원", status: "2. 진행중", progress: 88, due: "2026-09-30", note: "2차 예산 승인 완료(6/19) — 9월 말 가동 목표" },
-    { name: "A사 호텔체인 연간 공급 계약", type: "계약", dept: "영업", status: "3. 완료", progress: 100, due: "2026-06-30", note: "6/25 계약 체결 — 7월부터 매출 반영 (연 +60 전망)" },
-    { name: "노후 퀼팅기 교체 검토", type: "프로젝트", dept: "생산", status: "4. 보류", progress: 10, due: "2026-12-15", note: "투자 규모 검토 중, 4분기 재논의" },
-    { name: "공장 임대 재계약", type: "계약", dept: "경영지원", status: "2. 진행중", progress: 60, due: "2026-09-26", note: "인상률 5%로 재협상 중 — 9월 하순 결론 예정" }
+    { name: "부산 OO지하차도 차수 그라우팅", type: "공사(하도급)", dept: "부산현장", status: "2. 진행중", progress: 70, due: "2026-11-30", note: "기성 3회차 청구 완료 — 2공구 증액분 반영" },
+    { name: "인천 OO공동주택 지반보강(JSP)", type: "공사(하도급)", dept: "인천현장", status: "2. 진행중", progress: 45, due: "2027-01-31", note: "고압분사(JSP) 본공정 진행 — 동절기 양생 관리 필요" },
+    { name: "고성 방파제 기초 그라우팅", type: "공사(관급)", dept: "고성현장", status: "2. 진행중", progress: 30, due: "2026-12-20", note: "3월 착공 — 해상 조건으로 기상 리스크 관리" },
+    { name: "전문건설업 등록사항 변경 신고", type: "인허가", dept: "경영지원", status: "3. 완료", progress: 100, due: "2026-05-30", note: "5/28 처리 완료 (지반조성·포장공사업)" },
+    { name: "천공기 1대 증설 검토", type: "장비투자", dept: "장비", status: "1. 검토중", progress: 15, due: "2026-09-12", note: "임대 vs 구매 비교 중 — 9월 의사결정 안건" }
   ],
 
   recruiting: {
     stages: ["1. 신규 지원자 수신", "2. 서류 합격(면접 대기)", "3. 면접 진행", "4. 오퍼 제안", "5. 최종 합격", "6. 불합격"],
     candidates: [
-      { name: "오세훈", position: "봉제·조립 생산직", stage: "1. 신규 지원자 수신", applied: "2026-07-16", channel: "채용사이트", rating: "", interview: "", memo: "가구 봉제 6년, 산업용 재봉기 숙련" },
-      { name: "이서연", position: "품질관리 담당", stage: "2. 서류 합격(면접 대기)", applied: "2026-06-10", channel: "직접 지원", rating: "", interview: "2026-08-21 10:30", memo: "침구 QC 4년, ISO 9001 내부심사원 — 8/21 면접 예정" },
-      { name: "김민준", position: "봉제·조립 생산직", stage: "3. 면접 진행", applied: "2026-06-08", channel: "채용사이트", rating: "", interview: "2026-08-13 14:00", memo: "매트리스 조립 5년 — 8/13 실기 평가 예정" },
-      { name: "최수아", position: "설비보전 기사", stage: "4. 오퍼 제안", applied: "2026-06-03", channel: "추천", rating: "A (적극 추천)", interview: "2026-06-18 19:30", memo: "퀼팅기·재봉기 보전 경험 — 9/1 입사 목표" },
-      { name: "정다은", position: "경영지원 인턴", stage: "5. 최종 합격", applied: "2026-03-15", channel: "채용사이트", rating: "A (적극 추천)", interview: "", memo: "5/1 입사 완료" },
-      { name: "박지훈", position: "봉제·조립 생산직", stage: "5. 최종 합격", applied: "2026-05-28", channel: "헤드헌터", rating: "B (추천)", interview: "2026-06-16 23:00", memo: "6/22 입사 완료 (봉제·조립)" },
-      { name: "한도현", position: "봉제·조립 생산직", stage: "6. 불합격", applied: "2026-05-20", channel: "채용사이트", rating: "D (비추천)", interview: "", memo: "경력 요건 미달" }
+      { name: "오세훈", position: "그라우팅 기능공", stage: "1. 신규 지원자 수신", applied: "2026-07-30", channel: "채용사이트", rating: "", interview: "", memo: "차수 그라우팅 5년, JSP 장비 보조 경험" },
+      { name: "이서연", position: "공무(견적·기성) 담당", stage: "2. 서류 합격(면접 대기)", applied: "2026-06-10", channel: "직접 지원", rating: "", interview: "2026-08-21 10:30", memo: "전문건설 공무 4년, 기성 청구·실행예산 경험 — 8/21 면접 예정" },
+      { name: "김민준", position: "그라우팅 기능공", stage: "3. 면접 진행", applied: "2026-06-08", channel: "채용사이트", rating: "", interview: "2026-08-13 14:00", memo: "고압분사 그라우팅 6년 — 8/13 현장 실기 평가 예정" },
+      { name: "최수아", position: "천공기 운전원", stage: "4. 오퍼 제안", applied: "2026-06-03", channel: "지인 소개", rating: "A (적극 추천)", interview: "2026-06-18 19:30", memo: "크롤러 드릴·천공기 8년, 정비 가능 — 9/1 입사 목표" },
+      { name: "정다은", position: "경영지원 인턴", stage: "5. 최종 합격", applied: "2026-03-15", channel: "워크넷", rating: "A (적극 추천)", interview: "", memo: "5/1 입사 완료 (일용직 노무 신고 담당)" },
+      { name: "박지훈", position: "그라우팅 기능공", stage: "5. 최종 합격", applied: "2026-05-28", channel: "지인 소개", rating: "B (추천)", interview: "2026-06-16 23:00", memo: "6/22 입사 완료 (부산현장 배치)" },
+      { name: "한도현", position: "그라우팅 기능공", stage: "6. 불합격", applied: "2026-05-20", channel: "채용사이트", rating: "D (비추천)", interview: "", memo: "그라우팅 경력 요건 미달" }
     ],
     positions: [
-      { name: "설비보전 기사", dept: "생산", type: "계약직", count: 1, opened: "2026-06-01", target: "2026-09-30", status: "진행중" },
-      { name: "경영지원 인턴", dept: "경영지원", type: "인턴", count: 1, opened: "2026-03-01", target: "2026-04-30", status: "마감" },
-      { name: "품질관리 담당", dept: "품질관리", type: "정규직", count: 1, opened: "2026-05-15", target: "2026-09-30", status: "진행중" },
-      { name: "봉제·조립 생산직", dept: "생산", type: "정규직", count: 2, opened: "2026-05-01", target: "2026-10-31", status: "진행중" }
+      { name: "그라우팅 기능공", dept: "현장", type: "정규직", count: 2, opened: "2026-05-01", target: "2026-10-31", status: "진행중" },
+      { name: "공무(견적·기성) 담당", dept: "공무", type: "정규직", count: 1, opened: "2026-05-15", target: "2026-09-30", status: "진행중" },
+      { name: "천공기 운전원", dept: "장비", type: "계약직", count: 1, opened: "2026-06-01", target: "2026-09-30", status: "진행중" },
+      { name: "경영지원 인턴", dept: "경영지원", type: "인턴", count: 1, opened: "2026-03-01", target: "2026-04-30", status: "마감" }
     ],
     channels: [
-      { name: "채용사이트", applied: 68, screened: 22, interviewed: 9, offered: 3, hired: 3, spend: 180, costPerHire: 60, daysToHire: 42, note: "유입은 가장 많고 원가도 최저 — 생산직 채용 주력 채널" },
-      { name: "헤드헌터", applied: 6, screened: 5, interviewed: 3, offered: 2, hired: 1, spend: 850, costPerHire: 850, daysToHire: 35, note: "원가 최고 — 설비보전 등 확보 어려운 직군에만 선별 사용" },
-      { name: "직접 지원", applied: 21, screened: 7, interviewed: 3, offered: 1, hired: 0, spend: 0, costPerHire: 0, daysToHire: 38, note: "비용 0이나 상반기 입사 0명(품질관리 1명 면접 진행 중)" },
-      { name: "추천", applied: 12, screened: 9, interviewed: 6, offered: 2, hired: 2, spend: 200, costPerHire: 100, daysToHire: 24, note: "소요일 최단(24일)·서류 통과율 높음 — 사내 추천 포상금" }
+      { name: "채용사이트", applied: 28, screened: 10, interviewed: 5, offered: 1, hired: 1, spend: 90, costPerHire: 90, daysToHire: 45, note: "건설워커·사람인 공고비 — 기능공 모집 주력" },
+      { name: "지인 소개", applied: 7, screened: 5, interviewed: 3, offered: 2, hired: 1, spend: 50, costPerHire: 50, daysToHire: 20, note: "업계 소개 — 검증된 경력자, 소개 포상금" },
+      { name: "워크넷", applied: 15, screened: 6, interviewed: 3, offered: 1, hired: 1, spend: 0, costPerHire: 0, daysToHire: 33, note: "공공 무료 채널 — 내근직에 유효" },
+      { name: "직접 지원", applied: 8, screened: 3, interviewed: 1, offered: 0, hired: 0, spend: 0, costPerHire: 0, daysToHire: 38, note: "홈페이지·전화 문의" }
     ]
   }
 };

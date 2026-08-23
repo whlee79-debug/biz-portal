@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=12">
+<link rel="stylesheet" href="assets/style.css?v=13">
 <style>
 /* ===== Biz Portal 디자인 시스템 토큰 매핑 =====
    기존 대시보드(그린 SaaS)와 동일한 색/폰트를 쓰도록 변수 값만 교체.
@@ -147,7 +147,7 @@ section.blk{margin-top:48px}
   <div class="eyebrow">채용 파이프라인</div>
   <h1>지원자가 많은 채널이<br><em>좋은 채널은 아닙니다.</em></h1>
   <p class="lede">채널마다 <b>1명을 채용하는 데 드는 지원자 수, 기간, 비용</b>이 다릅니다. 유입만 보면 채용사이트가 압도적이지만, 실제로 입사까지 이어지는 비율과 원가를 나란히 놓으면 순서가 바뀝니다.
-  네 개 채널을 동시에 돌리며 매번 손으로 집계하던 것을 도구로 만들었습니다. 기본값은 2026년 상반기 실적(입사 6명)으로, 인력·조직 대시보드의 상반기 입사 누계와 같습니다. 단계별 숫자를 넣으면 <b>어느 채널을 늘리고 어디서 새는지</b>가 나오고, 목표 인원을 넣으면 필요한 지원자 수를 역산합니다.</p>
+  네 개 채널을 동시에 돌리며 매번 손으로 집계하던 것을 도구로 만들었습니다. 기본값은 2026년 연초 이후 실적(입사 3명)으로, 인력·조직 대시보드의 입사 누계와 같습니다. 단계별 숫자를 넣으면 <b>어느 채널을 늘리고 어디서 새는지</b>가 나오고, 목표 인원을 넣으면 필요한 지원자 수를 역산합니다.</p>
 </header>
 
 <div class="grid">
@@ -164,7 +164,7 @@ section.blk{margin-top:48px}
       </table>
     </div>
     <button class="addrow" id="add">채널 추가</button>
-    <p class="hint">소요일은 채용 요청 승인부터 입사일까지의 평균입니다(Time to Fill). 비용은 상반기 6개월간 해당 채널에 실제로 집행한 금액입니다 — 채용사이트는 유료 공고 게재비·이력서 열람권, 추천은 사내추천 포상금, 헤드헌터는 서치펌 수수료. 1명당 원가는 이 금액을 같은 기간 입사자 수로 나눈 값이라, 집행액이 같아도 입사가 늘면 내려갑니다.</p>
+    <p class="hint">소요일은 채용 요청 승인부터 입사일까지의 평균입니다(Time to Fill). 비용은 연초 이후 해당 채널에 실제로 집행한 금액입니다 — 채용사이트는 공고 게재비(건설워커·사람인), 지인 소개는 소개 포상금, 워크넷·직접 지원은 무료 채널. 1명당 원가는 이 금액을 같은 기간 입사자 수로 나눈 값이라, 집행액이 같아도 입사가 늘면 내려갑니다. 일용직 모집(인력사무소 경유)은 별도입니다.</p>
   </section>
 
   <aside class="panel">
@@ -222,15 +222,15 @@ section.blk{margin-top:48px}
 
 </div>
 
-<script src="assets/app.js?v=12"></script>
+<script src="assets/app.js?v=13"></script>
 <script>
 renderNav("pipeline.html");
 const $=id=>document.getElementById(id);
 let ch=[
-  {n:"채용사이트",  app:68, doc:22, itv:9, off:3, hire:3, day:42, cost:180},
-  {n:"추천",        app:12, doc:9,  itv:6, off:2, hire:2, day:24, cost:200},
-  {n:"직접 지원",   app:21, doc:7,  itv:3, off:1, hire:0, day:38, cost:0},
-  {n:"헤드헌터",    app:6,  doc:5,  itv:3, off:2, hire:1, day:35, cost:850}
+  {n:"채용사이트", app:28, doc:10, itv:5, off:1, hire:1, day:45, cost:90},
+  {n:"지인 소개",  app:7,  doc:5,  itv:3, off:2, hire:1, day:20, cost:50},
+  {n:"워크넷",     app:15, doc:6,  itv:3, off:1, hire:1, day:33, cost:0},
+  {n:"직접 지원",  app:8,  doc:3,  itv:1, off:0, hire:0, day:38, cost:0}
 ];
 const F=["app","doc","itv","off","hire","day","cost"];
 const won=v=>!isFinite(v)?"—":(v>=10000?(v/10000).toFixed(2)+"억":Math.round(v).toLocaleString()+"만");

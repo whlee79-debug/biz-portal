@@ -58,27 +58,28 @@ def check_series(src):
 
 
 def check_manufacturing(src):
-    """제조원가 내부 정합 — 이건 자체 모순이므로 오류."""
+    """시공원가 내부 정합 — 이건 자체 모순이므로 오류."""
     m, months = src["manufacturing"], src["months"]
     for i, month in enumerate(months):
-        parts = m["material"][i], m["labor"][i], m["overhead"][i]
+        parts = (m["material"][i], m["labor"][i], m["dayLabor"][i],
+                 m["equipment"][i], m["outsourcing"][i])
         if None in parts:
             continue
         total = sum(parts)
         if not close(total, m["total"][i], TOLERANCE["money"]):
-            err("%s 제조원가 %s ≠ 재료비+노무비+제조경비 %s (🏭 월별 제조원가 DB)"
+            err("%s 시공원가 %s ≠ 재료비+노무비+일용노무비+장비비+외주비 %s (재무 노트 시공원가 표)"
                 % (month, m["total"][i], total))
         if m["output"][i]:
             unit = m["total"][i] * 100.0 / m["output"][i]
             if not close(unit, m["unitCost"][i], TOLERANCE["unitCost"]):
-                err("%s 대당 제조원가 %s만 원 ≠ 제조원가÷생산량 %.2f만 원 (🏭 월별 제조원가 DB)"
+                err("%s m당 시공원가 %s만 원 ≠ 시공원가÷시공량 %.2f만 원 (재무 노트 시공원가 표)"
                     % (month, m["unitCost"][i], unit))
 
 
 def check_derived_vs_notion(src):
     """파생값과 노션이 들고 있는 값의 어긋남 — 어느 쪽이 맞는지는 사람 판단."""
     months, kpi, m = src["months"], src["kpi"], src["manufacturing"]
-    office = sum(d["cost"] for d in src["departments"] if d["group"] == "사무직")
+    office = sum(d["cost"] for d in src["departments"] if d["group"] == "내근직")
 
     drift_cost, drift_profit, drift_labor = [], [], []
     for i, month in enumerate(months):
@@ -104,7 +105,7 @@ def check_derived_vs_notion(src):
     if drift_profit:
         warn("📈 경영 핵심 지표 DB '영업이익'이 매출−비용과 다릅니다 — %s" % ", ".join(drift_profit))
     if drift_labor:
-        warn("📈 경영 핵심 지표 DB '인건비'가 노무비+사무직 인건비(%d)와 다릅니다 — %s"
+        warn("인력 현황 표 '인건비'가 노무비(직영)+내근직 인건비(%d)와 다릅니다 — %s"
              % (office, ", ".join(drift_labor)))
 
 
@@ -141,18 +142,18 @@ def check_people(src):
     for i, month in enumerate(months):
         staff = shift["fieldStaff"][i] + shift["officeStaff"][i]
         if staff != kpi["headcount"][i]:
-            err("%s 생산직+사무직 %d명 ≠ 총원 %d명 (⏱️ 근태·안전 DB vs 📈 핵심 지표 DB)"
+            err("%s 현장직+내근직 %d명 ≠ 총원 %d명 (근태·안전 표 vs 인력 현황 표)"
                 % (month, staff, kpi["headcount"][i]))
 
     latest = len(months) - 1
     dept_count = sum(d["count"] for d in src["departments"])
     if dept_count != kpi["headcount"][latest]:
-        err("부서별 인원 합계 %d명 ≠ %s 총원 %d명 (🏢 부서별 인원 DB)"
+        err("부서별 인원 합계 %d명 ≠ %s 총원 %d명 (부서별 인원 표)"
             % (dept_count, months[latest], kpi["headcount"][latest]))
 
-    field_cost = sum(d["cost"] for d in src["departments"] if d["group"] == "생산직")
+    field_cost = sum(d["cost"] for d in src["departments"] if d["group"] == "현장직")
     if not close(field_cost, m["labor"][latest], TOLERANCE["money"]):
-        err("생산직 부서 인건비 합계 %s ≠ %s 노무비 %s (🏢 부서별 인원 DB vs 🏭 제조원가 DB)"
+        err("현장직 부서 인건비 합계 %s ≠ %s 노무비(직영) %s (부서별 인원 표 vs 시공원가 표)"
             % (field_cost, months[latest], m["labor"][latest]))
 
     unassigned = [d["name"] for d in src["departments"] if d["group"] == "미분류"]
@@ -197,8 +198,8 @@ def check_cash_forecast(src):
 def check_wording(src):
     """같은 대상을 두 가지로 적어 둔 경우(오타 등)를 잡습니다."""
     blob = json.dumps(src, ensure_ascii=False)
-    if "퀵팅" in blob and "퀼팅" in blob:
-        warn("표기 흔들림: '퀵팅'과 '퀼팅'이 함께 쓰였습니다 — 노션에서 '퀼팅'으로 통일하세요.")
+    if "그라우딩" in blob:
+        warn("표기 흔들림: '그라우딩'은 '그라우팅'의 오기일 가능성이 큽니다 — 볼트에서 통일하세요.")
 
 
 def main():

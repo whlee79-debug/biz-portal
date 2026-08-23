@@ -15,20 +15,24 @@ OUT_PATH = os.path.join(ROOT, "dashboard", "assets", "data.js")
 
 # 배열 뒤에 붙일 설명 주석 — 숫자만 봐서는 뜻이 안 잡히는 필드에만 답니다.
 COMMENTS = {
-    "output": "생산량(대)",
-    "material": "재료비",
-    "labor": "노무비(생산직)",
-    "overhead": "제조경비(감가상각·전력·수선)",
-    "total": "제조원가 합계",
-    "sga": "판매관리비 (= 총비용 - 제조원가)",
-    "unitCost": "대당 제조원가(만 원)",
-    "foam": "우레탄폼",
-    "spring": "포켓스프링(강선)",
-    "fabric": "원단",
-    "laborCost": "전사 인건비(생산직 노무비 + 사무직, 잔업·특근 포함)",
-    "fieldStaff": "생산직(현장)",
-    "officeStaff": "사무직",
-    "overtimeHours": "잔업 시간(생산직 합계)",
+    "output": "시공량(m, 그라우팅 주입공 연장)",
+    "material": "재료비(시멘트·약액 등)",
+    "labor": "노무비(직영 현장직)",
+    "dayLabor": "일용직 노무비",
+    "equipment": "장비비(천공기·펌프 임대, 유류, 수선)",
+    "outsourcing": "외주비(협력업체)",
+    "total": "시공원가 합계",
+    "sga": "판매관리비 (= 총비용 - 시공원가)",
+    "unitCost": "m당 시공원가(만 원)",
+    "cement": "시멘트",
+    "chem": "그라우트 약액",
+    "fuel": "경유(장비 유류)",
+    "laborCost": "정직원 인건비(현장 노무비 + 내근, 잔업·특근 포함 · 일용직 별도)",
+    "fieldStaff": "현장직(정직원)",
+    "officeStaff": "내근직(공무·경영지원)",
+    "dayWorkers": "일용직 평균 인원",
+    "dayManDays": "일용 공수(연인원)",
+    "overtimeHours": "잔업 시간(현장직 합계)",
     "holidayHours": "특근(휴일근로) 시간",
     "allowance": "잔업·특근 수당(백만 원)",
     "noAccidentDays": "무재해 일수(월말 누적)",
@@ -84,7 +88,7 @@ def main():
     margin = [round(profit[i] * 100.0 / kpi["revenue"][i], 1) if kpi["revenue"][i] else 0
               for i in range(n)]
 
-    office_cost = sum(d["cost"] for d in src["departments"] if d["group"] == "사무직")
+    office_cost = sum(d["cost"] for d in src["departments"] if d["group"] == "내근직")
     labor_cost = [mfg["labor"][i] + office_cost for i in range(n)]
 
     leaves_total = sum(v for v in kpi["leaves"] if v)
@@ -96,8 +100,8 @@ def main():
 
     content = """/* {title} (단위: {unit})
    ⚠️ 이 파일은 자동 생성됩니다 — 직접 고치지 마세요.
-   노션 '경영 현황 종합 대시보드'를 고친 뒤 `python3 tools/sync.py` 를 실행하세요.
-   생성: {synced} · 원본: 노션({fetch_source}) · 모든 수치는 가상 데모 데이터 */
+   옵시디언 BizPortal 볼트를 고친 뒤 `python3 tools/sync.py` 를 실행하세요.
+   생성: {synced} · 원본: {fetch_source} · 모든 수치는 가상 데모 데이터 */
 const DATA = {{
   asOf: {as_of},
   months: {months},
@@ -111,12 +115,12 @@ const DATA = {{
 {cost_structure}
   }},
 
-  /* 제조원가 — 총비용 = 제조원가 + 판관비 로 정합 */
+  /* 시공원가 — 총비용 = 시공원가 + 판관비 로 정합 */
   manufacturing: {{
 {manufacturing}
   }},
 
-  /* 주요 원자재 단가 지수 ({base_month} = 100) */
+  /* 주요 자재·유류 단가 지수 ({base_month} = 100) */
   materialIndex: {{
 {material_index}
   }},
@@ -127,7 +131,7 @@ const DATA = {{
 {people}
   }},
 
-  /* 교대·근태 (경영지원 소관: 인건비 변동 관리) */
+  /* 근태·일용직 (경영지원 소관: 인건비·공수 관리) */
   shift: {{
 {shift}
   }},
@@ -175,16 +179,18 @@ const DATA = {{
             ("output", mfg["output"]),
             ("material", mfg["material"]),
             ("labor", mfg["labor"]),
-            ("overhead", mfg["overhead"]),
+            ("dayLabor", mfg["dayLabor"]),
+            ("equipment", mfg["equipment"]),
+            ("outsourcing", mfg["outsourcing"]),
             ("total", mfg["total"]),
             ("sga", mfg["sga"]),
             ("unitCost", mfg["unitCost"]),
             ("notes", mfg["notes"]),
         ]),
         material_index=block([
-            ("foam", src["materialIndex"]["foam"]),
-            ("spring", src["materialIndex"]["spring"]),
-            ("fabric", src["materialIndex"]["fabric"]),
+            ("cement", src["materialIndex"]["cement"]),
+            ("chem", src["materialIndex"]["chem"]),
+            ("fuel", src["materialIndex"]["fuel"]),
         ]),
         people=block([
             ("headcount", kpi["headcount"]),
@@ -197,6 +203,8 @@ const DATA = {{
         shift=block([
             ("fieldStaff", src["shift"]["fieldStaff"]),
             ("officeStaff", src["shift"]["officeStaff"]),
+            ("dayWorkers", src["shift"]["dayWorkers"]),
+            ("dayManDays", src["shift"]["dayManDays"]),
             ("overtimeHours", src["shift"]["overtimeHours"]),
             ("holidayHours", src["shift"]["holidayHours"]),
             ("allowance", src["shift"]["allowance"]),

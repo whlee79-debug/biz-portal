@@ -1,4 +1,4 @@
-// 노션 → 대시보드 동기화 데스크탑 앱 (macOS 네이티브)
+// 옵시디언 → 대시보드 동기화 데스크탑 앱 (macOS 네이티브)
 //
 // 더블클릭으로 실행하면 수집 → 정규화 → 검증 → 생성 → 배포를 순서대로 진행하고,
 // 단계별 진행 상황과 로그를 보여준 뒤 완료를 표시합니다.
@@ -20,15 +20,15 @@ struct Step {
 }
 
 let steps: [Step] = [
-    Step(name: "노션에서 수집",
-         command: ["/usr/bin/python3", root + "/tools/fetch_notion.py"],
-         hint: "노션 토큰이 유효한지, 통합이 'BI 대시보드 모음' 페이지에 연결됐는지 확인하세요."),
+    Step(name: "옵시디언에서 수집",
+         command: ["/usr/bin/python3", root + "/tools/fetch_obsidian.py"],
+         hint: "볼트(MyBrain/Personal/Portfolio/BizPortal) 노트의 표 형식을 확인하세요."),
     Step(name: "정규화",
          command: ["/usr/bin/python3", root + "/tools/normalize.py"],
-         hint: "노션 DB 구조가 바뀌었을 수 있습니다. tools/config.py를 확인하세요."),
+         hint: "볼트 표의 열 이름이 바뀌었을 수 있습니다. 00 대시보드 홈의 편집 규칙을 확인하세요."),
     Step(name: "정합성 검증",
          command: ["/usr/bin/python3", root + "/tools/verify.py"],
-         hint: "노션 DB끼리 숫자가 어긋납니다. 로그의 [오류] 항목을 노션에서 고친 뒤 다시 실행하세요."),
+         hint: "표끼리 숫자가 어긋납니다. 로그의 [오류] 항목을 옵시디언 볼트에서 고친 뒤 다시 실행하세요."),
     Step(name: "data.js 생성",
          command: ["/usr/bin/python3", root + "/tools/build.py"],
          hint: ""),
@@ -65,7 +65,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         window = NSWindow(contentRect: rect,
                           styleMask: [.titled, .closable, .miniaturizable, .resizable],
                           backing: .buffered, defer: false)
-        window.title = "노션 → 대시보드 동기화"
+        window.title = "옵시디언 → 대시보드 동기화"
         window.center()
         window.delegate = self
         window.minSize = NSSize(width: 540, height: 420)
@@ -144,13 +144,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
 
-        if loadToken().isEmpty {
-            statusLabel.stringValue = "노션 토큰 설정"
-            subLabel.stringValue = "최초 1회만 입력하면 저장됩니다."
-        } else {
-            startSync()
-        }
-        if loadToken().isEmpty { tokenBox.isHidden = false }
+        startSync()  // 옵시디언 볼트가 원본 — 토큰 불필요
     }
 
     func windowWillClose(_ notification: Notification) { NSApp.terminate(nil) }

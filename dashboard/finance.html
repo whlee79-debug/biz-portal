@@ -7,22 +7,22 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/favicon-32.png">
-<link rel="stylesheet" href="assets/style.css?v=12">
+<link rel="stylesheet" href="assets/style.css?v=13">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=12"></script>
+<script src="assets/data.js?v=13"></script>
 </head>
 <body>
 <div class="wrap">
   <div class="page-head">
     <h1>💰 월간 재무 요약 대시보드</h1>
-    <div class="meta">2026년 7월 기준 · 매트리스 제조공장 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
-    <p class="lede">매출은 느는데 이익이 그만큼 안 늘던 이유를 찾다가 만들었습니다. 총비용을 제조원가와 판관비로 나누고 <b>대당 원가</b>까지 내려가니, 원자재 단가 인상분이 어디서 이익을 갉아먹는지가 드러났습니다.</p>
+    <div class="meta">2026년 7월 기준 · 그라우팅 전문건설 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
+    <p class="lede">기성은 느는데 이익이 그만큼 안 늘던 이유를 찾다가 만들었습니다. 총비용을 시공원가와 판관비로 나누고 <b>m당 원가</b>까지 내려가니, 자재·유류 인상분과 외주비가 어디서 이익을 갉아먹는지가 드러났습니다.</p>
   </div>
 
   <h2 class="sec"><span class="sec-no">01</span>재무 요약</h2>
   <div class="kpis" id="kpis"></div>
 
-  <h2 class="sec"><span class="sec-no">02</span>월별 매출·비용 추이</h2>
+  <h2 class="sec"><span class="sec-no">02</span>월별 기성·비용 추이</h2>
   <div class="card">
     <h3>매출 · 비용 · 영업이익</h3>
     <div class="sub">2026년 1월 ~ 7월 · 백만 원</div>
@@ -45,7 +45,7 @@
   <h2 class="sec"><span class="sec-no">03</span>고정비/변동비 구조</h2>
   <div class="card">
     <h3>월 비용 구성</h3>
-    <div class="sub">고정비(인건비·임대료 등) + 변동비(원자재·외주 등) · 백만 원</div>
+    <div class="sub">고정비(정직원 인건비·장비 리스·임차 등) + 변동비(자재·유류·일용노무·외주 등) · 백만 원</div>
     <div class="chart-box"><canvas id="chart-cost"></canvas></div>
   </div>
   <div class="tbl-wrap" style="margin-top:14px">
@@ -55,34 +55,34 @@
     </table>
   </div>
 
-  <h2 class="sec"><span class="sec-no">04</span>제조원가</h2>
+  <h2 class="sec"><span class="sec-no">04</span>시공원가</h2>
   <div class="grid2">
     <div class="card">
-      <h3>제조원가 구성</h3>
-      <div class="sub">재료비 + 노무비 + 제조경비 · 백만 원</div>
+      <h3>시공원가 구성</h3>
+      <div class="sub">재료비 + 노무비(직영) + 일용노무비 + 장비비 + 외주비 · 백만 원</div>
       <div class="chart-box short"><canvas id="chart-mfg"></canvas></div>
     </div>
     <div class="card">
-      <h3>대당 제조원가</h3>
-      <div class="sub">제조원가 ÷ 생산량 · 만 원</div>
+      <h3>m당 시공원가</h3>
+      <div class="sub">시공원가 ÷ 시공량 · 만 원</div>
       <div class="chart-box short"><canvas id="chart-unit"></canvas></div>
     </div>
   </div>
   <div class="tbl-wrap" style="margin-top:14px">
     <table>
-      <thead><tr><th>월</th><th class="num">생산량(대)</th><th class="num">재료비</th><th class="num">노무비</th><th class="num">제조경비</th><th class="num">제조원가</th><th class="num">대당 원가</th><th>비고</th></tr></thead>
+      <thead><tr><th>월</th><th class="num">시공량(m)</th><th class="num">재료비</th><th class="num">노무비</th><th class="num">일용노무</th><th class="num">장비비</th><th class="num">외주비</th><th class="num">시공원가</th><th class="num">m당 원가</th><th>비고</th></tr></thead>
       <tbody id="tbl-mfg"></tbody>
     </table>
   </div>
-  <p class="note">총비용 = 제조원가 + 판매관리비. 생산량은 원가 산출을 위해 생산팀에서 제공받은 수치입니다.</p>
+  <p class="note">총비용 = 시공원가 + 판매관리비. 시공량(주입공 연장 m)은 원가 산출을 위해 각 현장 공무에서 제공받은 수치입니다.</p>
 
-  <h2 class="sec"><span class="sec-no">05</span>주요 원자재 단가</h2>
+  <h2 class="sec"><span class="sec-no">05</span>주요 자재·유류 단가</h2>
   <div class="card">
-    <h3>원자재 단가 지수</h3>
-    <div class="sub">2026년 1월 = 100 기준 · 우레탄폼 · 포켓스프링 · 원단</div>
+    <h3>자재·유류 단가 지수</h3>
+    <div class="sub">2026년 1월 = 100 기준 · 시멘트 · 그라우트 약액 · 경유</div>
     <div class="chart-box short"><canvas id="chart-material"></canvas></div>
   </div>
-  <p class="note">폼·원단 단가 상승이 재료비 비중 확대의 주요 원인입니다. 자재·구매팀과 단가 재협상 검토 중.</p>
+  <p class="note">경유·시멘트 단가 상승이 장비비·재료비 압박의 주요 원인입니다. 공무팀에서 자재 단가 재협상 검토 중.</p>
 
   <h2 class="sec"><span class="sec-no">06</span>현금흐름 예측 (향후 3개월)</h2>
   <div class="tbl-wrap">
@@ -91,12 +91,12 @@
       <tbody id="tbl-forecast"></tbody>
     </table>
   </div>
-  <p class="note">예측치는 7월 말 기준 가정이며, 의사결정 안건(임대 재계약·ERP 가동 일정) 결과에 따라 변동됩니다.</p>
+  <p class="note">예측치는 7월 말 기준 가정이며, 기성 수금 시점과 의사결정 안건(천공기 구매·동절기 공정) 결과에 따라 변동됩니다.</p>
 
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=12"></script>
+<script src="assets/app.js?v=13"></script>
 <script>
 renderNav("finance.html");
 const F = DATA.finance, CS = DATA.costStructure, M = DATA.manufacturing, MI = DATA.materialIndex;
@@ -132,27 +132,30 @@ document.getElementById("tbl-forecast").innerHTML = DATA.cashForecast.map(f => `
   <tr><td>${f.month}</td><td class="num">${f.inflow}</td><td class="num">${f.outflow}</td>
   <td class="num"><strong>${f.balance.toLocaleString()}</strong></td><td class="muted">${f.note}</td></tr>`).join("");
 
-/* 제조원가 구성 (누적 막대) */
+/* 시공원가 구성 (누적 막대) */
 makeBarChart("chart-mfg", DATA.monthLabels, [
   { label: "재료비", data: M.material, backgroundColor: THEME.rev },
-  { label: "노무비", data: M.labor, backgroundColor: THEME.profit },
-  { label: "제조경비", data: M.overhead, backgroundColor: THEME.aux }
+  { label: "노무비(직영)", data: M.labor, backgroundColor: THEME.profit },
+  { label: "일용노무", data: M.dayLabor, backgroundColor: "#8b5cf6" },
+  { label: "장비비", data: M.equipment, backgroundColor: THEME.aux },
+  { label: "외주비", data: M.outsourcing, backgroundColor: THEME.cost }
 ], { stacked: true, thickness: 34 });
 
-/* 대당 제조원가 */
-makeLineChart("chart-unit", DATA.monthLabels, [lineDS("대당 제조원가", M.unitCost, THEME.cost)], { unit: "만 원" });
+/* m당 시공원가 */
+makeLineChart("chart-unit", DATA.monthLabels, [lineDS("m당 시공원가", M.unitCost, THEME.cost)], { unit: "만 원" });
 
-/* 원자재 단가 지수 */
+/* 자재·유류 단가 지수 */
 makeLineChart("chart-material", DATA.monthLabels, [
-  lineDS("우레탄폼", MI.foam, THEME.rev),
-  lineDS("포켓스프링", MI.spring, THEME.cost),
-  lineDS("원단", MI.fabric, THEME.profit)
+  lineDS("시멘트", MI.cement, THEME.rev),
+  lineDS("그라우트 약액", MI.chem, THEME.profit),
+  lineDS("경유", MI.fuel, THEME.cost)
 ], { endLabels: true });
 
-/* 제조원가 표 */
+/* 시공원가 표 */
 document.getElementById("tbl-mfg").innerHTML = DATA.months.map((m, i) => `
   <tr><td>${m}</td><td class="num">${M.output[i].toLocaleString()}</td>
-  <td class="num">${M.material[i]}</td><td class="num">${M.labor[i]}</td><td class="num">${M.overhead[i]}</td>
+  <td class="num">${M.material[i]}</td><td class="num">${M.labor[i]}</td><td class="num">${M.dayLabor[i]}</td>
+  <td class="num">${M.equipment[i]}</td><td class="num">${M.outsourcing[i]}</td>
   <td class="num"><strong>${M.total[i]}</strong></td><td class="num">${M.unitCost[i]}만</td>
   <td class="muted">${M.notes[i] || "—"}</td></tr>`).join("");
 </script>
