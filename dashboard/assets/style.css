@@ -205,3 +205,40 @@ blockquote{
 }
 [data-theme="dark"] blockquote{color:var(--ink)}
 footer.site{margin-top:56px; padding-top:22px; border-top:1px solid var(--border); color:var(--muted); font-size:12.5px; text-align:center}
+
+/* ===== redesign preview: topbar / sparklines / table cards ===== */
+.topbar{
+  position:sticky; top:0; z-index:15; display:flex; align-items:center; gap:10px;
+  margin:-28px calc(-1*clamp(20px,3.4vw,44px)) 22px;
+  padding:10px clamp(20px,3.4vw,44px);
+  background:color-mix(in srgb, var(--page) 84%, transparent);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.topbar b{font-size:13.5px; letter-spacing:-0.01em; white-space:nowrap}
+.topbar .chip{
+  font-size:11.5px; font-weight:600; padding:3px 10px; border-radius:999px;
+  background:var(--chip-bg); color:var(--ink2); white-space:nowrap;
+}
+.topbar .chip.accent{background:var(--accent-soft); color:var(--accent-strong)}
+[data-theme="dark"] .topbar .chip.accent{color:var(--accent)}
+.topbar .chip.end{margin-left:auto}
+@media (max-width:860px){.topbar{top:56px; margin-top:-28px}}
+
+.kpi .spark{display:block; width:100%; height:30px; margin-top:12px}
+
+.grid2.sec-gap{margin-top:34px; align-items:stretch}
+.grid2.sec-gap>*{min-width:0}
+.tcard{
+  background:var(--card); border:1px solid var(--border); border-radius:14px;
+  box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column;
+}
+.tcard .tc-head{padding:18px 20px 12px}
+.tcard h3{font-size:15px; font-weight:700; letter-spacing:-0.01em; display:flex; align-items:baseline; gap:9px}
+.tcard h3 .sec-no{font-size:12px; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums}
+.tcard .sub{color:var(--muted); font-size:12.5px; margin-top:3px}
+.tcard .tbl-wrap.plain{border:none; box-shadow:none; border-radius:0; flex:1}
+.tcard table.fit{min-width:0}
+.card h3 .sec-no{font-size:12px; font-weight:700; color:var(--accent); margin-right:6px; font-variant-numeric:tabular-nums}
+.tcard table.fit td:first-child, .tcard table.fit th:first-child,
+.tcard table.fit td.num, .tcard table.fit th.num{white-space:nowrap}

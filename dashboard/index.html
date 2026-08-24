@@ -7,12 +7,18 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/favicon-32.png">
-<link rel="stylesheet" href="assets/style.css?v=13">
+<link rel="stylesheet" href="assets/style.css?v=14">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=13"></script>
+<script src="assets/data.js?v=14"></script>
 </head>
 <body>
 <div class="wrap">
+  <div class="topbar">
+    <b>경영 현황 종합 대시보드</b>
+    <span class="chip accent">2026-07 실적 기준</span>
+    <span class="chip">단위: 백만 원</span>
+    <span class="chip end">갱신 2026-08</span>
+  </div>
   <div class="page-head">
     <h1>📊 경영 현황 종합 대시보드</h1>
     <div class="meta">2026년 8월 경영 현황 보고 (7월 실적 기준) · 그라우팅 전문건설 · 작성: 경영지원부 · 단위: 백만 원</div>
@@ -26,23 +32,32 @@
   <h2 class="sec"><span class="sec-no">02</span>의사결정 요청</h2>
   <div class="decisions" id="decisions"></div>
 
-  <h2 class="sec"><span class="sec-no">03</span>시공·안전 요약</h2>
-  <div class="tbl-wrap">
-    <table>
-      <thead><tr><th>구분</th><th>7월</th><th>비고</th></tr></thead>
-      <tbody id="tbl-plant-summary"></tbody>
-    </table>
+  <div class="grid2 sec-gap">
+    <div class="tcard">
+      <div class="tc-head">
+        <h3><span class="sec-no">03</span>시공·안전 요약</h3>
+        <div class="sub">시공원가 상세는 <a href="finance.html">재무 대시보드</a> 참조 · 품질 지표는 현장·공무 소관</div>
+      </div>
+      <div class="tbl-wrap plain">
+        <table class="fit">
+          <thead><tr><th>구분</th><th>7월</th><th>비고</th></tr></thead>
+          <tbody id="tbl-plant-summary"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="tcard">
+      <div class="tc-head">
+        <h3><span class="sec-no">04</span>인력·조직 요약</h3>
+        <div class="sub">상세는 <a href="people.html">인력·조직 대시보드</a> 참조</div>
+      </div>
+      <div class="tbl-wrap plain">
+        <table class="fit">
+          <thead><tr><th>구분</th><th>7월</th><th>비고</th></tr></thead>
+          <tbody id="tbl-people-summary"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
-  <p class="note">시공원가 상세는 <a href="finance.html">월간 재무 요약 대시보드</a> 참조 · 주입 품질·개량체 강도 등 시공 품질 지표는 현장·공무 소관</p>
-
-  <h2 class="sec"><span class="sec-no">04</span>인력·조직 요약</h2>
-  <div class="tbl-wrap">
-    <table>
-      <thead><tr><th>구분</th><th>7월</th><th>비고</th></tr></thead>
-      <tbody id="tbl-people-summary"></tbody>
-    </table>
-  </div>
-  <p class="note">상세는 <a href="people.html">인력·조직 대시보드</a> 참조</p>
 
   <h2 class="sec"><span class="sec-no">05</span>상세 데이터</h2>
   <div class="links">
@@ -63,19 +78,24 @@
     </a>
   </div>
 
-  <h2 class="sec"><span class="sec-no">06</span>핵심 지표 추이</h2>
-  <div class="card">
-    <h3>매출 · 비용 · 영업이익</h3>
-    <div class="sub">2026년 1월 ~ 7월 · 백만 원</div>
-    <div class="chart-box"><canvas id="chart-core"></canvas></div>
-  </div>
-
-  <h2 class="sec"><span class="sec-no">07</span>월별 재무 현황</h2>
-  <div class="tbl-wrap">
-    <table>
-      <thead><tr><th>월</th><th class="num">매출</th><th class="num">비용</th><th class="num">영업이익</th><th class="num">영업이익률</th><th class="num">현금 잔고</th><th>비고</th></tr></thead>
-      <tbody id="tbl-finance"></tbody>
-    </table>
+  <div class="grid2 sec-gap">
+    <div class="card">
+      <h3><span class="sec-no">06</span>핵심 지표 추이</h3>
+      <div class="sub">매출 · 비용 · 영업이익 · 2026년 1월 ~ 7월 · 백만 원</div>
+      <div class="chart-box"><canvas id="chart-core"></canvas></div>
+    </div>
+    <div class="tcard">
+      <div class="tc-head">
+        <h3><span class="sec-no">07</span>월별 재무 현황</h3>
+        <div class="sub">백만 원 · 비고는 행 위에 마우스</div>
+      </div>
+      <div class="tbl-wrap plain">
+        <table class="fit">
+          <thead><tr><th>월</th><th class="num">매출</th><th class="num">비용</th><th class="num">영업이익</th><th class="num">이익률</th><th class="num">현금 잔고</th></tr></thead>
+          <tbody id="tbl-finance"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <h2 class="sec"><span class="sec-no">08</span>주요 프로젝트·계약</h2>
@@ -89,7 +109,7 @@
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=13"></script>
+<script src="assets/app.js?v=14"></script>
 <script>
 renderNav("index.html");
 const F = DATA.finance, P = DATA.people, M = DATA.manufacturing, S = DATA.safety;
@@ -103,13 +123,23 @@ function delta(cur, pre, unit, pctBase) {
   const pct = pctBase ? ` (${d >= 0 ? "+" : ""}${(d / pre * 100).toFixed(1)}%)` : "";
   return `<div class="delta ${cls}">${sign} ${Math.abs(d).toLocaleString()}${unit}${pct} <span class="vs">전월 대비</span></div>`;
 }
+function spark(series, color) {
+  const w = 120, h = 30, n = series.length;
+  const min = Math.min(...series), max = Math.max(...series), r = (max - min) || 1;
+  const xy = i => `${(i / (n - 1) * (w - 6) + 3).toFixed(1)},${(h - 4 - (series[i] - min) / r * (h - 8)).toFixed(1)}`;
+  const pts = series.map((_, i) => xy(i)).join(" ");
+  const [lx, ly] = xy(n - 1).split(",");
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+    <circle cx="${lx}" cy="${ly}" r="2.6" fill="${color}"/></svg>`;
+}
 document.getElementById("kpis").innerHTML = `
-  <div class="kpi"><div class="label">매출</div><div class="value">${F.revenue[last]} <small>백만 원</small></div>${delta(F.revenue[last], F.revenue[prev], "", true)}</div>
-  <div class="kpi"><div class="label">영업이익</div><div class="value">${F.profit[last]} <small>백만 원 · 이익률 ${F.marginPct[last]}%</small></div>${delta(F.profit[last], F.profit[prev], "")}</div>
-  <div class="kpi"><div class="label">현금 잔고</div><div class="value">${F.cash[last].toLocaleString()} <small>백만 원</small></div>${delta(F.cash[last], F.cash[prev], "")}</div>
-  <div class="kpi"><div class="label">총원</div><div class="value">${P.headcount[last]} <small>명</small></div>${delta(P.headcount[last], P.headcount[prev], "명")}</div>
-  <div class="kpi"><div class="label">m당 시공원가</div><div class="value">${M.unitCost[last]} <small>만 원 · ${M.output[last].toLocaleString()}m 시공</small></div>${delta(M.unitCost[last], M.unitCost[prev], "만 원")}</div>
-  <div class="kpi"><div class="label">무재해 일수</div><div class="value">${S.noAccidentDays[last]} <small>일</small></div><div class="delta up">재해 ${S.accidents.reduce((a, b) => a + b, 0)}건 <span class="vs">연중 누계</span></div></div>`;
+  <div class="kpi"><div class="label">매출</div><div class="value">${F.revenue[last]} <small>백만 원</small></div>${delta(F.revenue[last], F.revenue[prev], "", true)}${spark(F.revenue, "var(--s-rev)")}</div>
+  <div class="kpi"><div class="label">영업이익</div><div class="value">${F.profit[last]} <small>백만 원 · 이익률 ${F.marginPct[last]}%</small></div>${delta(F.profit[last], F.profit[prev], "")}${spark(F.profit, "var(--s-profit)")}</div>
+  <div class="kpi"><div class="label">현금 잔고</div><div class="value">${F.cash[last].toLocaleString()} <small>백만 원</small></div>${delta(F.cash[last], F.cash[prev], "")}${spark(F.cash, "var(--s-rev)")}</div>
+  <div class="kpi"><div class="label">총원</div><div class="value">${P.headcount[last]} <small>명</small></div>${delta(P.headcount[last], P.headcount[prev], "명")}${spark(P.headcount, "var(--s-aux)")}</div>
+  <div class="kpi"><div class="label">m당 시공원가</div><div class="value">${M.unitCost[last]} <small>만 원 · ${M.output[last].toLocaleString()}m 시공</small></div>${delta(M.unitCost[last], M.unitCost[prev], "만 원")}${spark(M.unitCost, "var(--s-cost)")}</div>
+  <div class="kpi"><div class="label">무재해 일수</div><div class="value">${S.noAccidentDays[last]} <small>일</small></div><div class="delta up">재해 ${S.accidents.reduce((a, b) => a + b, 0)}건 <span class="vs">연중 누계</span></div>${spark(S.noAccidentDays, "var(--s-profit)")}</div>`;
 
 /* 의사결정 */
 document.getElementById("decisions").innerHTML = DATA.decisions.map((d, i) => `
@@ -129,9 +159,9 @@ makeLineChart("chart-core", DATA.monthLabels, [
 
 /* 재무 테이블 */
 document.getElementById("tbl-finance").innerHTML = DATA.months.map((m, i) => `
-  <tr><td>${m}</td><td class="num">${F.revenue[i]}</td><td class="num">${F.cost[i]}</td>
+  <tr title="${F.notes[i] || ""}"><td>${m}</td><td class="num">${F.revenue[i]}</td><td class="num">${F.cost[i]}</td>
   <td class="num">${F.profit[i]}</td><td class="num">${F.marginPct[i]}%</td>
-  <td class="num">${F.cash[i].toLocaleString()}</td><td class="muted">${F.notes[i] || "—"}</td></tr>`).join("");
+  <td class="num">${F.cash[i].toLocaleString()}</td></tr>`).join("");
 
 /* 프로젝트 테이블 */
 const stPill = s => s.startsWith("3") ? "green" : s.startsWith("2") ? "blue" : s.startsWith("1") ? "yellow" : "gray";
