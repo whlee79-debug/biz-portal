@@ -1,11 +1,8 @@
 /* 공통: 테마 감지 + Chart.js 기본 설정 + 렌더 헬퍼 */
 (function () {
-  const mq = window.matchMedia("(prefers-color-scheme: dark)");
-  function applyTheme() {
-    document.documentElement.setAttribute("data-theme", mq.matches ? "dark" : "light");
-  }
-  applyTheme();
-  mq.addEventListener("change", () => location.reload());
+  // 기본은 항상 라이트(이력서·캡처용). 다크가 필요하면 주소 끝에 ?theme=dark
+  const dark = new URLSearchParams(location.search).get("theme") === "dark";
+  document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
 })();
 
 const THEME = (function () {
