@@ -8,7 +8,7 @@ normalize → verify → build 단계를 그대로 재사용합니다.
     python3 tools/fetch_obsidian.py
 
 노트 ↔ 데이터 매핑
-    재무.md        월별 재무 현황 / 월별 비용 구조 / 월별 시공원가 / 현금흐름 예측
+    재무.md        월별 재무 현황 / 월별 비용 구조 / 월별 제조원가 / 현금흐름 예측
     인력·조직.md   월별 인력 현황 / 부서별 인원 / 월별 근태·안전 / 직군별 인건비 구성
     채용.md        후보자 파이프라인 / 채용 포지션 / 채널별 채용 성과
     프로젝트.md    주요 프로젝트·계약
@@ -124,7 +124,7 @@ def main():
 
     fin_rows = table_after(finance, "월별 재무 현황")
     cost_rows = table_after(finance, "월별 비용 구조")
-    mfg_rows = table_after(finance, "월별 시공원가")
+    mfg_rows = table_after(finance, "월별 제조원가")
     forecast = table_after(finance, "현금흐름 예측")
 
     ppl_rows = table_after(people, "월별 인력 현황")
@@ -184,7 +184,7 @@ def main():
         candidates.append(c)
 
     for r in mfg_rows:
-        r.setdefault("항목", "시공원가 %s" % r["월"])
+        r.setdefault("항목", "제조원가 %s" % r["월"])
     for r in shift_rows:
         r.setdefault("항목", "근태·안전 %s" % r["월"])
 

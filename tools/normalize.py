@@ -62,11 +62,11 @@ def main():
     raw = load(RAW_PATH)
     manual = load(MANUAL_PATH)
 
-    # ── 월 축: 시공원가 표를 기준으로 잡습니다(가장 촘촘하고 최신) ──
+    # ── 월 축: 제조원가 표를 기준으로 잡습니다(가장 촘촘하고 최신) ──
     mfg_by_month = {r["월"]: r for r in rows(raw, "manufacturing")}
     months = sorted(mfg_by_month)
     if not months:
-        sys.exit("오류: 월별 시공원가 표가 비어 있어 월 축을 만들 수 없습니다.")
+        sys.exit("오류: 월별 제조원가 표가 비어 있어 월 축을 만들 수 없습니다.")
     month_labels = ["%d월" % int(m.split("-")[1]) for m in months]
 
     # ── 경영 핵심 지표: 세로형(지표·월·값) → 지표별 월 배열 ──
@@ -149,22 +149,23 @@ def main():
         },
 
         "manufacturing": {
-            "material": series(mfg_by_month, months, "재료비"),
+            "rawMaterial": series(mfg_by_month, months, "원료비"),
+            "packaging": series(mfg_by_month, months, "부자재비"),
             "labor": series(mfg_by_month, months, "노무비"),
-            "dayLabor": series(mfg_by_month, months, "일용노무비"),
-            "equipment": series(mfg_by_month, months, "장비비"),
-            "outsourcing": series(mfg_by_month, months, "외주비"),
-            "total": series(mfg_by_month, months, "시공원가"),
+            "dispatch": series(mfg_by_month, months, "파견용역비"),
+            "overhead": series(mfg_by_month, months, "제조경비"),
+            "total": series(mfg_by_month, months, "제조원가"),
             "sga": series(mfg_by_month, months, "판관비"),
-            "output": series(mfg_by_month, months, "시공량(m)"),
-            "unitCost": series(mfg_by_month, months, "m당 시공원가(만원)"),
+            "output": series(mfg_by_month, months, "생산량(천개)"),
+            "unitCost": series(mfg_by_month, months, "개당 제조원가(원)"),
+            "defectPct": series(mfg_by_month, months, "공정 불량률(%)"),
             "notes": [mfg_by_month.get(m, {}).get("비고") or "" for m in months],
         },
 
         "materialIndex": {
-            "cement": series(mfg_by_month, months, "시멘트 지수"),
-            "chem": series(mfg_by_month, months, "약액 지수"),
-            "fuel": series(mfg_by_month, months, "유류 지수"),
+            "raw": series(mfg_by_month, months, "원료 지수"),
+            "container": series(mfg_by_month, months, "용기 지수"),
+            "carton": series(mfg_by_month, months, "포장재 지수"),
         },
 
         "costStructure": {
@@ -173,10 +174,10 @@ def main():
         },
 
         "shift": {
-            "fieldStaff": series(shift_by_month, months, "현장직"),
-            "officeStaff": series(shift_by_month, months, "내근직"),
-            "dayWorkers": series(shift_by_month, months, "일용직"),
-            "dayManDays": series(shift_by_month, months, "일용 공수"),
+            "prodStaff": series(shift_by_month, months, "생산직"),
+            "officeStaff": series(shift_by_month, months, "사무직"),
+            "dispatchStaff": series(shift_by_month, months, "파견직"),
+            "dispatchManDays": series(shift_by_month, months, "파견 공수"),
             "overtimeHours": series(shift_by_month, months, "잔업시간"),
             "holidayHours": series(shift_by_month, months, "특근시간"),
             "allowance": series(shift_by_month, months, "잔업·특근 수당"),

@@ -166,4 +166,18 @@ function renderNav(active) {
       <a href="/">${I.home}<span class="ftxt">포털 홈</span></a>
     </div>`;
   document.body.prepend(el);
+  if (typeof DATA !== "undefined") fillPeriod();
+}
+
+/* 기간 표기 — 볼트에 새 달을 추가하면 HTML을 고치지 않아도 따라온다 */
+function fillPeriod() {
+  const n = DATA.months.length;
+  const year = DATA.months[n - 1].slice(0, 4);
+  const text = {
+    asof: DATA.asOf,
+    lastm: DATA.monthLabels[n - 1],
+    range: `${year}년 ${DATA.monthLabels[0]} ~ ${DATA.monthLabels[n - 1]}`,
+    ytd: `${parseInt(DATA.months[0].slice(5), 10)}~${parseInt(DATA.months[n - 1].slice(5), 10)}월`
+  };
+  document.querySelectorAll("[data-fill]").forEach(el => { el.textContent = text[el.dataset.fill] ?? ""; });
 }

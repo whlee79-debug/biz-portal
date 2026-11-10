@@ -58,28 +58,32 @@ def check_series(src):
 
 
 def check_manufacturing(src):
-    """시공원가 내부 정합 — 이건 자체 모순이므로 오류."""
+    """제조원가 내부 정합 — 이건 자체 모순이므로 오류."""
     m, months = src["manufacturing"], src["months"]
     for i, month in enumerate(months):
-        parts = (m["material"][i], m["labor"][i], m["dayLabor"][i],
-                 m["equipment"][i], m["outsourcing"][i])
+        parts = (m["rawMaterial"][i], m["packaging"][i], m["labor"][i],
+                 m["dispatch"][i], m["overhead"][i])
         if None in parts:
             continue
         total = sum(parts)
         if not close(total, m["total"][i], TOLERANCE["money"]):
-            err("%s 시공원가 %s ≠ 재료비+노무비+일용노무비+장비비+외주비 %s (재무 노트 시공원가 표)"
+            err("%s 제조원가 %s ≠ 원료비+부자재비+노무비+파견용역비+제조경비 %s (재무 노트 제조원가 표)"
                 % (month, m["total"][i], total))
         if m["output"][i]:
-            unit = m["total"][i] * 100.0 / m["output"][i]
+            # 백만 원 ÷ 천 개 = 천 원/개 → ×1000 = 원/개
+            unit = m["total"][i] * 1000.0 / m["output"][i]
             if not close(unit, m["unitCost"][i], TOLERANCE["unitCost"]):
-                err("%s m당 시공원가 %s만 원 ≠ 시공원가÷시공량 %.2f만 원 (재무 노트 시공원가 표)"
+                err("%s 개당 제조원가 %s원 ≠ 제조원가÷생산량 %.1f원 (재무 노트 제조원가 표)"
                     % (month, m["unitCost"][i], unit))
+        defect = m["defectPct"][i]
+        if defect is not None and not 0 <= defect < 10:
+            err("%s 공정 불량률 %s%%가 비정상 범위입니다 (재무 노트 제조원가 표)" % (month, defect))
 
 
 def check_derived_vs_notion(src):
     """파생값과 노션이 들고 있는 값의 어긋남 — 어느 쪽이 맞는지는 사람 판단."""
     months, kpi, m = src["months"], src["kpi"], src["manufacturing"]
-    office = sum(d["cost"] for d in src["departments"] if d["group"] == "내근직")
+    office = sum(d["cost"] for d in src["departments"] if d["group"] == "사무직")
 
     drift_cost, drift_profit, drift_labor = [], [], []
     for i, month in enumerate(months):
@@ -105,7 +109,7 @@ def check_derived_vs_notion(src):
     if drift_profit:
         warn("📈 경영 핵심 지표 DB '영업이익'이 매출−비용과 다릅니다 — %s" % ", ".join(drift_profit))
     if drift_labor:
-        warn("인력 현황 표 '인건비'가 노무비(직영)+내근직 인건비(%d)와 다릅니다 — %s"
+        warn("인력 현황 표 '인건비'가 노무비(생산직)+사무직 인건비(%d)와 다릅니다 — %s"
              % (office, ", ".join(drift_labor)))
 
 
@@ -140,9 +144,9 @@ def check_people(src):
     """인원·인건비 교차 검증."""
     months, kpi, shift, m = src["months"], src["kpi"], src["shift"], src["manufacturing"]
     for i, month in enumerate(months):
-        staff = shift["fieldStaff"][i] + shift["officeStaff"][i]
+        staff = shift["prodStaff"][i] + shift["officeStaff"][i]
         if staff != kpi["headcount"][i]:
-            err("%s 현장직+내근직 %d명 ≠ 총원 %d명 (근태·안전 표 vs 인력 현황 표)"
+            err("%s 생산직+사무직 %d명 ≠ 총원 %d명 (근태·안전 표 vs 인력 현황 표)"
                 % (month, staff, kpi["headcount"][i]))
 
     latest = len(months) - 1
@@ -151,10 +155,10 @@ def check_people(src):
         err("부서별 인원 합계 %d명 ≠ %s 총원 %d명 (부서별 인원 표)"
             % (dept_count, months[latest], kpi["headcount"][latest]))
 
-    field_cost = sum(d["cost"] for d in src["departments"] if d["group"] == "현장직")
-    if not close(field_cost, m["labor"][latest], TOLERANCE["money"]):
-        err("현장직 부서 인건비 합계 %s ≠ %s 노무비(직영) %s (부서별 인원 표 vs 시공원가 표)"
-            % (field_cost, months[latest], m["labor"][latest]))
+    prod_cost = sum(d["cost"] for d in src["departments"] if d["group"] == "생산직")
+    if not close(prod_cost, m["labor"][latest], TOLERANCE["money"]):
+        err("생산직 부서 인건비 합계 %s ≠ %s 노무비(생산직) %s (부서별 인원 표 vs 제조원가 표)"
+            % (prod_cost, months[latest], m["labor"][latest]))
 
     unassigned = [d["name"] for d in src["departments"] if d["group"] == "미분류"]
     if unassigned:
@@ -198,8 +202,9 @@ def check_cash_forecast(src):
 def check_wording(src):
     """같은 대상을 두 가지로 적어 둔 경우(오타 등)를 잡습니다."""
     blob = json.dumps(src, ensure_ascii=False)
-    if "그라우딩" in blob:
-        warn("표기 흔들림: '그라우딩'은 '그라우팅'의 오기일 가능성이 큽니다 — 볼트에서 통일하세요.")
+    for typo, right in (("충진", "충전"), ("CGPM", "CGMP")):
+        if typo in blob:
+            warn("표기 흔들림: '%s'는 '%s'의 오기일 가능성이 큽니다 — 볼트에서 통일하세요." % (typo, right))
 
 
 def main():

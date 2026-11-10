@@ -7,25 +7,25 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/favicon-32.png">
-<link rel="stylesheet" href="assets/style.css?v=13">
+<link rel="stylesheet" href="assets/style.css?v=14">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=13"></script>
+<script src="assets/data.js?v=14"></script>
 </head>
 <body>
 <div class="wrap">
   <div class="page-head">
     <h1>💰 월간 재무 요약 대시보드</h1>
-    <div class="meta">2026년 7월 기준 · 그라우팅 전문건설 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
-    <p class="lede">기성은 느는데 이익이 그만큼 안 늘던 이유를 찾다가 만들었습니다. 총비용을 시공원가와 판관비로 나누고 <b>m당 원가</b>까지 내려가니, 자재·유류 인상분과 외주비가 어디서 이익을 갉아먹는지가 드러났습니다.</p>
+    <div class="meta"><span data-fill="asof"></span> 기준 · 화장품 ODM·OEM 제조 · 단위: 백만 원 · 매월 첫 주 업데이트</div>
+    <p class="lede">출하가 늘어도 이익이 그만큼 따라오지 않던 이유를 찾다가 만들었습니다. 총비용을 제조원가와 판관비로 나누고 <b>개당 제조원가</b>까지 내려가니, 원료 단가 상승과 성수기 파견 인력이 어디서 이익을 갉아먹고, 가동률이 어디서 그걸 메워 주는지가 드러났습니다.</p>
   </div>
 
   <h2 class="sec"><span class="sec-no">01</span>재무 요약</h2>
   <div class="kpis" id="kpis"></div>
 
-  <h2 class="sec"><span class="sec-no">02</span>월별 기성·비용 추이</h2>
+  <h2 class="sec"><span class="sec-no">02</span>월별 매출·비용 추이</h2>
   <div class="card">
     <h3>매출 · 비용 · 영업이익</h3>
-    <div class="sub">2026년 1월 ~ 7월 · 백만 원</div>
+    <div class="sub"><span data-fill="range"></span> · 백만 원</div>
     <div class="chart-box"><canvas id="chart-core"></canvas></div>
   </div>
 
@@ -45,7 +45,7 @@
   <h2 class="sec"><span class="sec-no">03</span>고정비/변동비 구조</h2>
   <div class="card">
     <h3>월 비용 구성</h3>
-    <div class="sub">고정비(정직원 인건비·장비 리스·임차 등) + 변동비(자재·유류·일용노무·외주 등) · 백만 원</div>
+    <div class="sub">고정비(정직원 기본 인건비·감가상각·공장 임차 등) + 변동비(원료·부자재·파견용역·잔업수당·전력 등) · 백만 원</div>
     <div class="chart-box"><canvas id="chart-cost"></canvas></div>
   </div>
   <div class="tbl-wrap" style="margin-top:14px">
@@ -55,34 +55,34 @@
     </table>
   </div>
 
-  <h2 class="sec"><span class="sec-no">04</span>시공원가</h2>
+  <h2 class="sec"><span class="sec-no">04</span>제조원가</h2>
   <div class="grid2">
     <div class="card">
-      <h3>시공원가 구성</h3>
-      <div class="sub">재료비 + 노무비(직영) + 일용노무비 + 장비비 + 외주비 · 백만 원</div>
+      <h3>제조원가 구성</h3>
+      <div class="sub">원료비 + 부자재비 + 노무비(생산직) + 파견용역비 + 제조경비 · 백만 원</div>
       <div class="chart-box short"><canvas id="chart-mfg"></canvas></div>
     </div>
     <div class="card">
-      <h3>m당 시공원가</h3>
-      <div class="sub">시공원가 ÷ 시공량 · 만 원</div>
+      <h3>개당 제조원가 · 공정 불량률</h3>
+      <div class="sub">제조원가 ÷ 생산량(원) · 불량률(%, 오른쪽 축)</div>
       <div class="chart-box short"><canvas id="chart-unit"></canvas></div>
     </div>
   </div>
   <div class="tbl-wrap" style="margin-top:14px">
     <table>
-      <thead><tr><th>월</th><th class="num">시공량(m)</th><th class="num">재료비</th><th class="num">노무비</th><th class="num">일용노무</th><th class="num">장비비</th><th class="num">외주비</th><th class="num">시공원가</th><th class="num">m당 원가</th><th>비고</th></tr></thead>
+      <thead><tr><th>월</th><th class="num">생산량(천개)</th><th class="num">원료비</th><th class="num">부자재비</th><th class="num">노무비</th><th class="num">파견용역</th><th class="num">제조경비</th><th class="num">제조원가</th><th class="num">개당 원가</th><th class="num">불량률</th><th>비고</th></tr></thead>
       <tbody id="tbl-mfg"></tbody>
     </table>
   </div>
-  <p class="note">총비용 = 시공원가 + 판매관리비. 시공량(주입공 연장 m)은 원가 산출을 위해 각 현장 공무에서 제공받은 수치입니다.</p>
+  <p class="note">총비용 = 제조원가 + 판매관리비. 생산량은 충전 완료 기준(천 개)으로, 생산관리 MES 집계를 받아 원가를 산출합니다. 원료비와 부자재비(용기·단상자)가 제조원가의 약 4분의 3을 차지합니다.</p>
 
-  <h2 class="sec"><span class="sec-no">05</span>주요 자재·유류 단가</h2>
+  <h2 class="sec"><span class="sec-no">05</span>주요 원부자재 단가</h2>
   <div class="card">
-    <h3>자재·유류 단가 지수</h3>
-    <div class="sub">2026년 1월 = 100 기준 · 시멘트 · 그라우트 약액 · 경유</div>
+    <h3>원부자재 단가 지수</h3>
+    <div class="sub"><span data-fill="range"></span> · 1월 = 100 · 원료 · 용기 · 포장재</div>
     <div class="chart-box short"><canvas id="chart-material"></canvas></div>
   </div>
-  <p class="note">경유·시멘트 단가 상승이 장비비·재료비 압박의 주요 원인입니다. 공무팀에서 자재 단가 재협상 검토 중.</p>
+  <p class="note" id="note-material"></p>
 
   <h2 class="sec"><span class="sec-no">06</span>현금흐름 예측 (향후 3개월)</h2>
   <div class="tbl-wrap">
@@ -91,22 +91,25 @@
       <tbody id="tbl-forecast"></tbody>
     </table>
   </div>
-  <p class="note">예측치는 7월 말 기준 가정이며, 기성 수금 시점과 의사결정 안건(천공기 구매·동절기 공정) 결과에 따라 변동됩니다.</p>
+  <p class="note">예측치는 <span data-fill="lastm"></span> 말 기준 가정이며, 고객사 수금 시점과 의사결정 안건(충전 3호기 투자·성수기 인력 운영) 결과에 따라 변동됩니다.</p>
 
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=13"></script>
+<script src="assets/app.js?v=14"></script>
 <script>
 renderNav("finance.html");
 const F = DATA.finance, CS = DATA.costStructure, M = DATA.manufacturing, MI = DATA.materialIndex;
 const last = F.revenue.length - 1, prev = last - 1;
+/* 증감 배지 — 비용처럼 줄수록 좋은 지표는 색을 뒤집는다 */
+const chg = (d, lowerIsBetter, vs) =>
+  `<div class="delta ${(d >= 0) !== lowerIsBetter ? "up" : "down"}">${d >= 0 ? "▲" : "▼"} ${Math.abs(d).toLocaleString()} <span class="vs">${vs}</span></div>`;
 
 document.getElementById("kpis").innerHTML = `
-  <div class="kpi"><div class="label">매출</div><div class="value">${F.revenue[last]} <small>백만 원</small></div><div class="delta up">▲ ${F.revenue[last]-F.revenue[prev]} <span class="vs">월간 최고</span></div></div>
-  <div class="kpi"><div class="label">비용</div><div class="value">${F.cost[last]} <small>백만 원</small></div><div class="delta down">▲ ${F.cost[last]-F.cost[prev]} <span class="vs">고정비 비중 ${(CS.fixed[last]/(CS.fixed[last]+CS.variable[last])*100).toFixed(0)}%</span></div></div>
-  <div class="kpi"><div class="label">영업이익</div><div class="value">${F.profit[last]} <small>백만 원</small></div><div class="delta up">▲ ${F.profit[last]-F.profit[prev]} <span class="vs">이익률 ${F.marginPct[last]}%</span></div></div>
-  <div class="kpi"><div class="label">현금 잔고</div><div class="value">${F.cash[last].toLocaleString()} <small>백만 원</small></div><div class="delta up">▲ ${F.cash[last]-F.cash[prev]} <span class="vs">운영자금 약 ${(F.cash[last]/F.cost[last]).toFixed(1)}개월분</span></div></div>`;
+  <div class="kpi"><div class="label">매출</div><div class="value">${F.revenue[last].toLocaleString()} <small>백만 원</small></div>${chg(F.revenue[last]-F.revenue[prev], false, F.revenue[last] === Math.max(...F.revenue) ? "월간 최고" : "전월 대비")}</div>
+  <div class="kpi"><div class="label">비용</div><div class="value">${F.cost[last].toLocaleString()} <small>백만 원</small></div>${chg(F.cost[last]-F.cost[prev], true, `고정비 비중 ${(CS.fixed[last]/(CS.fixed[last]+CS.variable[last])*100).toFixed(0)}%`)}</div>
+  <div class="kpi"><div class="label">영업이익</div><div class="value">${F.profit[last].toLocaleString()} <small>백만 원</small></div>${chg(F.profit[last]-F.profit[prev], false, `이익률 ${F.marginPct[last]}%`)}</div>
+  <div class="kpi"><div class="label">현금 잔고</div><div class="value">${F.cash[last].toLocaleString()} <small>백만 원</small></div>${chg(F.cash[last]-F.cash[prev], false, `운영자금 약 ${(F.cash[last]/F.cost[last]).toFixed(1)}개월분`)}</div>`;
 
 makeLineChart("chart-core", DATA.monthLabels, [
   lineDS("매출", F.revenue, THEME.rev),
@@ -124,39 +127,53 @@ makeBarChart("chart-cost", DATA.monthLabels, [
 
 document.getElementById("tbl-cost").innerHTML = DATA.months.map((m, i) => {
   const total = CS.fixed[i] + CS.variable[i];
-  return `<tr><td>${m}</td><td class="num">${CS.fixed[i]}</td><td class="num">${CS.variable[i]}</td>
-  <td class="num">${total}</td><td class="num">${(CS.fixed[i]/total*100).toFixed(1)}%</td></tr>`;
+  return `<tr><td>${m}</td><td class="num">${CS.fixed[i].toLocaleString()}</td><td class="num">${CS.variable[i].toLocaleString()}</td>
+  <td class="num">${total.toLocaleString()}</td><td class="num">${(CS.fixed[i]/total*100).toFixed(1)}%</td></tr>`;
 }).join("");
 
 document.getElementById("tbl-forecast").innerHTML = DATA.cashForecast.map(f => `
-  <tr><td>${f.month}</td><td class="num">${f.inflow}</td><td class="num">${f.outflow}</td>
+  <tr><td>${f.month}</td><td class="num">${f.inflow.toLocaleString()}</td><td class="num">${f.outflow.toLocaleString()}</td>
   <td class="num"><strong>${f.balance.toLocaleString()}</strong></td><td class="muted">${f.note}</td></tr>`).join("");
 
-/* 시공원가 구성 (누적 막대) */
+/* 제조원가 구성 (누적 막대) */
 makeBarChart("chart-mfg", DATA.monthLabels, [
-  { label: "재료비", data: M.material, backgroundColor: THEME.rev },
-  { label: "노무비(직영)", data: M.labor, backgroundColor: THEME.profit },
-  { label: "일용노무", data: M.dayLabor, backgroundColor: "#8b5cf6" },
-  { label: "장비비", data: M.equipment, backgroundColor: THEME.aux },
-  { label: "외주비", data: M.outsourcing, backgroundColor: THEME.cost }
-], { stacked: true, thickness: 34 });
+  { label: "원료비", data: M.rawMaterial, backgroundColor: THEME.rev },
+  { label: "부자재비", data: M.packaging, backgroundColor: "#8b5cf6" },
+  { label: "노무비(생산직)", data: M.labor, backgroundColor: THEME.profit },
+  { label: "파견용역", data: M.dispatch, backgroundColor: THEME.aux },
+  { label: "제조경비", data: M.overhead, backgroundColor: THEME.cost }
+], { stacked: true, thickness: 30 });
 
-/* m당 시공원가 */
-makeLineChart("chart-unit", DATA.monthLabels, [lineDS("m당 시공원가", M.unitCost, THEME.cost)], { unit: "만 원" });
+/* 개당 제조원가 + 불량률(보조축) */
+const unitChart = makeLineChart("chart-unit", DATA.monthLabels, [
+  lineDS("개당 제조원가", M.unitCost, THEME.cost),
+  { ...lineDS("공정 불량률", M.defectPct, THEME.aux), yAxisID: "y2", borderDash: [5, 4] }
+], { unit: "원" });
+unitChart.options.scales.y2 = {
+  position: "right", grid: { drawOnChartArea: false }, border: { display: false },
+  ticks: { callback: v => v.toFixed(2) + "%" }
+};
+unitChart.options.plugins.tooltip.callbacks.label = c => c.dataset.yAxisID === "y2"
+  ? ` ${c.dataset.label}: ${c.parsed.y.toFixed(2)}%`
+  : ` ${c.dataset.label}: ${c.parsed.y.toLocaleString()}원`;
+unitChart.update();
 
-/* 자재·유류 단가 지수 */
+/* 원부자재 단가 지수 */
 makeLineChart("chart-material", DATA.monthLabels, [
-  lineDS("시멘트", MI.cement, THEME.rev),
-  lineDS("그라우트 약액", MI.chem, THEME.profit),
-  lineDS("경유", MI.fuel, THEME.cost)
+  lineDS("원료", MI.raw, THEME.cost),
+  lineDS("용기", MI.container, THEME.rev),
+  lineDS("포장재", MI.carton, THEME.profit)
 ], { endLabels: true });
+document.getElementById("note-material").textContent =
+  `원료(글리세린·식물성 오일) 지수가 1월 대비 ${(MI.raw[last] - 100).toFixed(1)}% 올라 개당 원가를 밀어 올리는 가장 큰 요인입니다. 7월에 판매단가에 일부 반영했고, 구매·생산관리팀에서 대체 공급처와 고객사 단가 재협상안을 검토 중입니다.`;
 
-/* 시공원가 표 */
+/* 제조원가 표 */
 document.getElementById("tbl-mfg").innerHTML = DATA.months.map((m, i) => `
   <tr><td>${m}</td><td class="num">${M.output[i].toLocaleString()}</td>
-  <td class="num">${M.material[i]}</td><td class="num">${M.labor[i]}</td><td class="num">${M.dayLabor[i]}</td>
-  <td class="num">${M.equipment[i]}</td><td class="num">${M.outsourcing[i]}</td>
-  <td class="num"><strong>${M.total[i]}</strong></td><td class="num">${M.unitCost[i]}만</td>
+  <td class="num">${M.rawMaterial[i].toLocaleString()}</td><td class="num">${M.packaging[i].toLocaleString()}</td>
+  <td class="num">${M.labor[i]}</td><td class="num">${M.dispatch[i]}</td><td class="num">${M.overhead[i]}</td>
+  <td class="num"><strong>${M.total[i].toLocaleString()}</strong></td><td class="num">${M.unitCost[i].toLocaleString()}원</td>
+  <td class="num">${M.defectPct[i].toFixed(2)}%</td>
   <td class="muted">${M.notes[i] || "—"}</td></tr>`).join("");
 </script>
 </body>

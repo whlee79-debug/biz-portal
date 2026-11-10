@@ -15,24 +15,25 @@ OUT_PATH = os.path.join(ROOT, "dashboard", "assets", "data.js")
 
 # 배열 뒤에 붙일 설명 주석 — 숫자만 봐서는 뜻이 안 잡히는 필드에만 답니다.
 COMMENTS = {
-    "output": "시공량(m, 그라우팅 주입공 연장)",
-    "material": "재료비(시멘트·약액 등)",
-    "labor": "노무비(직영 현장직)",
-    "dayLabor": "일용직 노무비",
-    "equipment": "장비비(천공기·펌프 임대, 유류, 수선)",
-    "outsourcing": "외주비(협력업체)",
-    "total": "시공원가 합계",
-    "sga": "판매관리비 (= 총비용 - 시공원가)",
-    "unitCost": "m당 시공원가(만 원)",
-    "cement": "시멘트",
-    "chem": "그라우트 약액",
-    "fuel": "경유(장비 유류)",
-    "laborCost": "정직원 인건비(현장 노무비 + 내근, 잔업·특근 포함 · 일용직 별도)",
-    "fieldStaff": "현장직(정직원)",
-    "officeStaff": "내근직(공무·경영지원)",
-    "dayWorkers": "일용직 평균 인원",
-    "dayManDays": "일용 공수(연인원)",
-    "overtimeHours": "잔업 시간(현장직 합계)",
+    "output": "생산량(천 개)",
+    "rawMaterial": "원료비(오일·보습제·기능성 원료)",
+    "packaging": "부자재비(용기·캡·단상자·포장재)",
+    "labor": "노무비(생산직 정직원)",
+    "dispatch": "파견용역비(충전·포장 라인)",
+    "overhead": "제조경비(전력·감가상각·수선·외부시험)",
+    "total": "제조원가 합계",
+    "sga": "판매관리비 (= 총비용 - 제조원가)",
+    "unitCost": "개당 제조원가(원)",
+    "defectPct": "공정 불량률(%)",
+    "raw": "원료(글리세린·식물성 오일 등)",
+    "container": "용기(PP·PET 수지)",
+    "carton": "포장재(단상자·지류)",
+    "laborCost": "정직원 인건비(생산직 노무비 + 사무직, 잔업·특근 포함 · 파견 별도)",
+    "prodStaff": "생산직(정직원)",
+    "officeStaff": "사무직(연구·영업·구매·경영지원)",
+    "dispatchStaff": "파견직 평균 인원",
+    "dispatchManDays": "파견 공수(연인원)",
+    "overtimeHours": "잔업 시간(생산직 합계)",
     "holidayHours": "특근(휴일근로) 시간",
     "allowance": "잔업·특근 수당(백만 원)",
     "noAccidentDays": "무재해 일수(월말 누적)",
@@ -88,7 +89,7 @@ def main():
     margin = [round(profit[i] * 100.0 / kpi["revenue"][i], 1) if kpi["revenue"][i] else 0
               for i in range(n)]
 
-    office_cost = sum(d["cost"] for d in src["departments"] if d["group"] == "내근직")
+    office_cost = sum(d["cost"] for d in src["departments"] if d["group"] == "사무직")
     labor_cost = [mfg["labor"][i] + office_cost for i in range(n)]
 
     leaves_total = sum(v for v in kpi["leaves"] if v)
@@ -115,12 +116,12 @@ const DATA = {{
 {cost_structure}
   }},
 
-  /* 시공원가 — 총비용 = 시공원가 + 판관비 로 정합 */
+  /* 제조원가 — 총비용 = 제조원가 + 판관비 로 정합 */
   manufacturing: {{
 {manufacturing}
   }},
 
-  /* 주요 자재·유류 단가 지수 ({base_month} = 100) */
+  /* 주요 원부자재 단가 지수 ({base_month} = 100) */
   materialIndex: {{
 {material_index}
   }},
@@ -131,7 +132,7 @@ const DATA = {{
 {people}
   }},
 
-  /* 근태·일용직 (경영지원 소관: 인건비·공수 관리) */
+  /* 근태·파견 (경영지원 소관: 인건비·공수 관리) */
   shift: {{
 {shift}
   }},
@@ -177,20 +178,21 @@ const DATA = {{
         ]),
         manufacturing=block([
             ("output", mfg["output"]),
-            ("material", mfg["material"]),
+            ("rawMaterial", mfg["rawMaterial"]),
+            ("packaging", mfg["packaging"]),
             ("labor", mfg["labor"]),
-            ("dayLabor", mfg["dayLabor"]),
-            ("equipment", mfg["equipment"]),
-            ("outsourcing", mfg["outsourcing"]),
+            ("dispatch", mfg["dispatch"]),
+            ("overhead", mfg["overhead"]),
             ("total", mfg["total"]),
             ("sga", mfg["sga"]),
             ("unitCost", mfg["unitCost"]),
+            ("defectPct", mfg["defectPct"]),
             ("notes", mfg["notes"]),
         ]),
         material_index=block([
-            ("cement", src["materialIndex"]["cement"]),
-            ("chem", src["materialIndex"]["chem"]),
-            ("fuel", src["materialIndex"]["fuel"]),
+            ("raw", src["materialIndex"]["raw"]),
+            ("container", src["materialIndex"]["container"]),
+            ("carton", src["materialIndex"]["carton"]),
         ]),
         people=block([
             ("headcount", kpi["headcount"]),
@@ -201,10 +203,10 @@ const DATA = {{
             ("attritionPct", attrition),
         ]),
         shift=block([
-            ("fieldStaff", src["shift"]["fieldStaff"]),
+            ("prodStaff", src["shift"]["prodStaff"]),
             ("officeStaff", src["shift"]["officeStaff"]),
-            ("dayWorkers", src["shift"]["dayWorkers"]),
-            ("dayManDays", src["shift"]["dayManDays"]),
+            ("dispatchStaff", src["shift"]["dispatchStaff"]),
+            ("dispatchManDays", src["shift"]["dispatchManDays"]),
             ("overtimeHours", src["shift"]["overtimeHours"]),
             ("holidayHours", src["shift"]["holidayHours"]),
             ("allowance", src["shift"]["allowance"]),

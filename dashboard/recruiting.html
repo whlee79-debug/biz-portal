@@ -7,9 +7,9 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/favicon-32.png">
-<link rel="stylesheet" href="assets/style.css?v=13">
+<link rel="stylesheet" href="assets/style.css?v=14">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=13"></script>
+<script src="assets/data.js?v=14"></script>
 </head>
 <body>
 <div class="wrap">
@@ -25,7 +25,7 @@
   <h2 class="sec"><span class="sec-no">02</span>단계별 현황</h2>
   <div class="card">
     <h3>단계별 후보자 수</h3>
-    <div class="sub">전체 후보자 7명 · 단위: 명</div>
+    <div class="sub">전체 후보자 <span id="cand-total"></span>명 · 단위: 명</div>
     <div class="chart-box short"><canvas id="chart-stages"></canvas></div>
   </div>
 
@@ -48,9 +48,10 @@
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=13"></script>
+<script src="assets/app.js?v=14"></script>
 <script>
 renderNav("recruiting.html");
+document.getElementById("cand-total").textContent = DATA.recruiting.candidates.length;
 const R = DATA.recruiting;
 
 /* 칸반 */

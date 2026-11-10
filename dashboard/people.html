@@ -7,16 +7,16 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/favicon-32.png">
-<link rel="stylesheet" href="assets/style.css?v=13">
+<link rel="stylesheet" href="assets/style.css?v=14">
 <script src="assets/chart.umd.min.js"></script>
-<script src="assets/data.js?v=13"></script>
+<script src="assets/data.js?v=14"></script>
 </head>
 <body>
 <div class="wrap">
   <div class="page-head">
     <h1>👥 인력·조직 대시보드</h1>
-    <div class="meta">2026년 7월 기준 (정직원 12명 · 현장직 8/내근직 4 · 일용직 4명 별도) · 인건비 단위: 백만 원</div>
-    <p class="lede">인원은 그대로인데 인건비만 오르는 달이 반복됐습니다. <b>잔업·특근과 일용직 공수를 인원·인건비와 같은 화면</b>에 놓으니, 증가분이 채용이 아니라 현장 물량에서 온다는 것이 분명해졌습니다.</p>
+    <div class="meta" id="meta"></div>
+    <p class="lede">인원은 그대로인데 인건비만 오르는 달이 반복됐습니다. <b>잔업·특근과 파견 공수를 인원·인건비와 같은 화면</b>에 놓으니, 증가분이 채용이 아니라 선케어 성수기와 연말 기획세트 물량에서 온다는 것이 분명해졌습니다.</p>
   </div>
 
   <h2 class="sec"><span class="sec-no">01</span>인력 요약</h2>
@@ -27,12 +27,12 @@
   <div class="grid2">
     <div class="card">
       <h3>부서별 인원</h3>
-      <div class="sub">2026년 7월 · 명</div>
+      <div class="sub"><span data-fill="asof"></span> · 명</div>
       <div class="chart-box short"><canvas id="chart-dept-count"></canvas></div>
     </div>
     <div class="card">
       <h3>부서별 월 인건비</h3>
-      <div class="sub">2026년 7월 · 백만 원</div>
+      <div class="sub"><span data-fill="asof"></span> · 백만 원</div>
       <div class="chart-box short"><canvas id="chart-dept-cost"></canvas></div>
     </div>
   </div>
@@ -65,26 +65,26 @@
     </table>
   </div>
 
-  <h2 class="sec"><span class="sec-no">05</span>근태·일용직 현황</h2>
+  <h2 class="sec"><span class="sec-no">05</span>근태·파견 현황</h2>
   <div class="grid2">
     <div class="card">
-      <h3>현장직 / 내근직 / 일용직 구성</h3>
+      <h3>생산직 / 사무직 / 파견직 구성</h3>
       <div class="sub">월별 · 명</div>
       <div class="chart-box short"><canvas id="chart-staff"></canvas></div>
     </div>
     <div class="card">
       <h3>잔업 · 특근 시간</h3>
-      <div class="sub">현장직 합계 · 시간</div>
+      <div class="sub">생산직 합계 · 시간</div>
       <div class="chart-box short"><canvas id="chart-ot"></canvas></div>
     </div>
   </div>
   <div class="tbl-wrap" style="margin-top:14px">
     <table>
-      <thead><tr><th>월</th><th class="num">현장직</th><th class="num">내근직</th><th class="num">일용직</th><th class="num">일용 공수</th><th class="num">잔업(시간)</th><th class="num">특근(시간)</th><th class="num">잔업·특근 수당</th><th class="num">1인당 잔업</th></tr></thead>
+      <thead><tr><th>월</th><th class="num">생산직</th><th class="num">사무직</th><th class="num">파견직</th><th class="num">파견 공수</th><th class="num">잔업(시간)</th><th class="num">특근(시간)</th><th class="num">잔업·특근 수당</th><th class="num">1인당 잔업</th></tr></thead>
       <tbody id="tbl-shift"></tbody>
     </table>
   </div>
-  <p class="note">잔업·특근 수당과 일용직 공수는 인건비 중 변동 요소로, 현장 물량에 따라 증감합니다. 주 52시간 준수를 위해 1인당 잔업시간을 함께 관리하고, 일용노무비(평균 노임단가 18만 원 기준)는 시공원가에 반영됩니다.</p>
+  <p class="note">잔업·특근 수당과 파견 공수는 인건비 중 변동 요소로, 성수기 물량에 따라 증감합니다. 주 52시간 준수를 위해 생산직 1인당 잔업시간을 함께 관리하고, 파견용역비(공수당 13.5만 원 기준)는 제조원가에 반영됩니다. 같은 업무에 파견은 최대 2년까지라 성수기 인력 운영안과 함께 봅니다.</p>
 
   <h2 class="sec"><span class="sec-no">06</span>채용 파이프라인 요약</h2>
   <div class="card">
@@ -96,17 +96,20 @@
   <footer class="site">Portfolio Demo · 모든 데이터는 가상의 데모 데이터입니다.</footer>
 </div>
 
-<script src="assets/app.js?v=13"></script>
+<script src="assets/app.js?v=14"></script>
 <script>
 renderNav("people.html");
 const P = DATA.people, D = DATA.departments, R = DATA.recruiting, SH = DATA.shift, F = DATA.finance;
 const last = P.headcount.length - 1, prev = last - 1;
+const openPos = R.positions.filter(p => p.status === "진행중");
+document.getElementById("meta").textContent =
+  `${DATA.asOf} 기준 (정직원 ${P.headcount[last]}명 · 생산직 ${SH.prodStaff[last]}/사무직 ${SH.officeStaff[last]} · 파견 ${SH.dispatchStaff[last]}명 별도) · 인건비 단위: 백만 원`;
 
 document.getElementById("kpis").innerHTML = `
   <div class="kpi"><div class="label">총원</div><div class="value">${P.headcount[last]} <small>명</small></div><div class="delta up">▲ ${P.headcount[last]-P.headcount[prev]}명 <span class="vs">전월 대비</span></div></div>
-  <div class="kpi"><div class="label">인건비(정직원)</div><div class="value">${P.laborCost[last]} <small>백만 원</small></div><div class="delta"><span class="vs">매출 대비 ${(P.laborCost[last] / F.revenue[last] * 100).toFixed(1)}% · 일용노무 ${DATA.manufacturing.dayLabor[last]} 별도</span></div></div>
-  <div class="kpi"><div class="label">누적 퇴사율 (1~7월)</div><div class="value">${P.attritionPct}<small>%</small></div><div class="delta"><span class="vs">퇴사 ${P.leaves.reduce((a,b)=>a+b,0)}명 / 평균 인원 ${(P.headcount.reduce((a,b)=>a+b,0)/P.headcount.length).toFixed(1)}명</span></div></div>
-  <div class="kpi"><div class="label">채용 진행</div><div class="value">${R.candidates.filter(c => /^[1-4]\./.test(c.stage)).length} <small>명 파이프라인</small></div><div class="delta"><span class="vs">오픈 포지션 ${R.positions.filter(p => p.status === "진행중").length}개 (기능공·공무·천공기 운전원)</span></div></div>`;
+  <div class="kpi"><div class="label">인건비(정직원)</div><div class="value">${P.laborCost[last]} <small>백만 원</small></div><div class="delta"><span class="vs">매출 대비 ${(P.laborCost[last] / F.revenue[last] * 100).toFixed(1)}% · 파견용역 ${DATA.manufacturing.dispatch[last]} 별도</span></div></div>
+  <div class="kpi"><div class="label">누적 퇴사율 (${DATA.monthLabels[0].replace("월", "")}~${DATA.monthLabels[last]})</div><div class="value">${P.attritionPct}<small>%</small></div><div class="delta"><span class="vs">퇴사 ${P.leaves.reduce((a,b)=>a+b,0)}명 / 평균 인원 ${(P.headcount.reduce((a,b)=>a+b,0)/P.headcount.length).toFixed(1)}명</span></div></div>
+  <div class="kpi"><div class="label">채용 진행</div><div class="value">${R.candidates.filter(c => /^[1-4]\./.test(c.stage)).length} <small>명 파이프라인</small></div><div class="delta"><span class="vs">오픈 포지션 ${openPos.length}개 (${openPos.map(p => p.name.replace(/\(.*\)/, "")).join("·")})</span></div></div>`;
 
 makeBarChart("chart-dept-count", D.map(d => d.name),
   [{ label: "인원", data: D.map(d => d.count), backgroundColor: THEME.rev }],
@@ -131,9 +134,9 @@ document.getElementById("tbl-people").innerHTML = DATA.months.map((m, i) => `
 
 /* 교대·근태 */
 makeBarChart("chart-staff", DATA.monthLabels, [
-  { label: "현장직", data: SH.fieldStaff, backgroundColor: THEME.rev },
-  { label: "내근직", data: SH.officeStaff, backgroundColor: THEME.aux },
-  { label: "일용직", data: SH.dayWorkers, backgroundColor: "#8b5cf6" }
+  { label: "생산직", data: SH.prodStaff, backgroundColor: THEME.rev },
+  { label: "사무직", data: SH.officeStaff, backgroundColor: THEME.aux },
+  { label: "파견직", data: SH.dispatchStaff, backgroundColor: "#8b5cf6" }
 ], { stacked: true, unit: "명" });
 
 makeBarChart("chart-ot", DATA.monthLabels, [
@@ -142,11 +145,11 @@ makeBarChart("chart-ot", DATA.monthLabels, [
 ], { stacked: true, unit: "시간" });
 
 document.getElementById("tbl-shift").innerHTML = DATA.months.map((m, i) => `
-  <tr><td>${m}</td><td class="num">${SH.fieldStaff[i]}</td><td class="num">${SH.officeStaff[i]}</td>
-  <td class="num">${SH.dayWorkers[i]}</td><td class="num">${SH.dayManDays[i]}</td>
+  <tr><td>${m}</td><td class="num">${SH.prodStaff[i]}</td><td class="num">${SH.officeStaff[i]}</td>
+  <td class="num">${SH.dispatchStaff[i]}</td><td class="num">${SH.dispatchManDays[i]}</td>
   <td class="num">${SH.overtimeHours[i].toLocaleString()}</td><td class="num">${SH.holidayHours[i]}</td>
   <td class="num">${SH.allowance[i]}</td>
-  <td class="num">${(SH.overtimeHours[i] / SH.fieldStaff[i]).toFixed(1)}h</td></tr>`).join("");
+  <td class="num">${(SH.overtimeHours[i] / SH.prodStaff[i]).toFixed(1)}h</td></tr>`).join("");
 
 const stageCounts = R.stages.map(s => R.candidates.filter(c => c.stage === s).length);
 makeBarChart("chart-pipeline", R.stages.map(s => s.replace(/^\d+\. /, "")),
