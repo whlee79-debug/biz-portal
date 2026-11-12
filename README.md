@@ -15,7 +15,7 @@ HR 규정 챗봇을 한 사이트로 묶은 포트폴리오입니다.
 | 채용 | [`/dashboard/recruiting.html`](https://wonho98.duckdns.org/dashboard/recruiting.html) |
 | 채용 채널 분석 | [`/dashboard/pipeline.html`](https://wonho98.duckdns.org/dashboard/pipeline.html) |
 | 인건비 시뮬레이터 | [`/dashboard/simulator.html`](https://wonho98.duckdns.org/dashboard/simulator.html) |
-| HR 규정 챗봇 | `/chatbot/` (접속 비밀번호 필요 · 별도 저장소) |
+| HR 규정 챗봇 | [`/chatbot/`](https://wonho98.duckdns.org/chatbot/) · 코드는 [hr-chatbot](https://github.com/whlee79-debug/hr-chatbot) |
 
 ## 왜 만들었나
 
